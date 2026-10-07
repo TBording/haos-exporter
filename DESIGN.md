@@ -78,14 +78,16 @@ The plan:
 - **The exporter stays on role `default`.** It will not move to `manager` to
   keep the app metrics: `manager` is root-equivalent (above). Losing
   `haos_app_*` is the accepted cost.
-- **The break is silent.** When a release drops the field, `/supervisor/info`
-  still parses. The `supervisor_info` collector keeps reporting success, every
-  `haos_app_*` series disappears, and `haos_updates_pending{type="app"}` reads
-  0.
+- **The break is reported, not silent.** When a release drops the field (or
+  sends it as `null`), `/supervisor/info` still parses, and the rest of the
+  `supervisor_info` collector keeps working: Supervisor version, health and
+  feature flags. But `haos_supervisor_app_list_present` drops to 0, every
+  `haos_app_*` series and `haos_updates_pending{type="app"}` are left out
+  rather than reported as zero, and each poll logs an ERROR naming the
+  cause. An empty list (`[]`) is still a list: it reports 1 and a pending
+  count of 0.
 - **Watch for it:**
-  - Alert on an empty app list while the `supervisor_info` poll succeeds.
-    That state is impossible while the list exists, because the exporter
-    itself is always installed.
+  - Alert on `haos_supervisor_app_list_present == 0`.
   - Alert on `haos_supervisor_feature_flag{flag="supervisor_v2_api"} == 1`
     as the early sign. DOCS.md has both expressions.
 - **When either fires,** re-measure against that release's Supervisor
@@ -238,6 +240,7 @@ truncated to 128 runes. App slugs must match `^[-_.A-Za-z0-9]{1,64}$`
 | `haos_supervisor_healthy` | | `/supervisor/info` |
 | `haos_supervisor_supported` | | `/supervisor/info` |
 | `haos_supervisor_feature_flag` | `flag` | `/supervisor/info` |
+| `haos_supervisor_app_list_present` | | `/supervisor/info`: 1 while it carries the app list; 0 when the field is missing, and then no app series and no `haos_updates_pending{type="app"}` |
 | `haos_os_boot_slot_info` | `slot`, `state`, `status`, `version` | `/os/info` |
 | `haos_app_info` | `slug`, `name`, `version`, `version_latest`, `repository` | `/supervisor/info` |
 | `haos_app_state` | `slug`, `state` (started, stopped, startup, error, unknown) | StateSet: 1 for the current state, 0 for the rest |

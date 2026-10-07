@@ -32,6 +32,8 @@ var (
 		"1 if the Supervisor reports the installation as supported.", nil, nil)
 	featureFlagDesc = prometheus.NewDesc(namespace+"_supervisor_feature_flag",
 		"Supervisor feature flag state.", []string{"flag"}, nil)
+	appListPresentDesc = prometheus.NewDesc(namespace+"_supervisor_app_list_present",
+		"1 if /supervisor/info carries its app list; 0 when the field is missing, in which case no app series and no updates_pending{type=\"app\"} are reported.", nil, nil)
 
 	appInfoDesc = prometheus.NewDesc(namespace+"_app_info",
 		"Installed app.", []string{"slug", "name", "version", "version_latest", "repository"}, nil)
@@ -165,7 +167,7 @@ func (supervisorInfoPart) name() string { return collectorSupervisorInfo }
 
 func (supervisorInfoPart) describe(ch chan<- *prometheus.Desc) {
 	for _, d := range []*prometheus.Desc{versionInfoDesc, updateAvailableDesc, updatesPendingDesc,
-		supervisorHealthyDesc, supervisorSupportedDesc, featureFlagDesc,
+		supervisorHealthyDesc, supervisorSupportedDesc, featureFlagDesc, appListPresentDesc,
 		appInfoDesc, appStateDesc, appUpdateDesc} {
 		ch <- d
 	}
@@ -186,10 +188,21 @@ func (supervisorInfoPart) update(s *runState, b *batch) error {
 		}
 	}
 
+	// The v1 app list is deprecated (DESIGN.md, "Known future break"). When a
+	// Supervisor release drops it, say so: an absent list must not read as
+	// an installation with no apps and nothing pending.
+	if info.Apps == nil {
+		b.gauge(appListPresentDesc, 0)
+		s.logger.Error("app list missing from /supervisor/info; app metrics are not reported",
+			"collector", collectorSupervisorInfo, "see", "DESIGN.md, Known future break")
+		return nil
+	}
+	b.gauge(appListPresentDesc, 1)
+
 	// The pending count covers every app the Supervisor lists, including
 	// ones whose series are dropped below.
 	pending, kept := 0, 0
-	for _, app := range info.Apps {
+	for _, app := range *info.Apps {
 		if app.UpdateAvailable {
 			pending++
 		}
