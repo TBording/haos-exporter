@@ -27,7 +27,7 @@ ENV CGO_ENABLED=0 \
 WORKDIR /src
 
 # One step downloads the modules, builds, and deletes both Go caches, so
-# the layer holds only /out (haos-exporter#6). The Supervisor builds on the
+# the layer holds only /out. The Supervisor builds on the
 # data partition this app watches and keeps every layer as build cache,
 # which nothing reclaims: kept in layers, the Go build cache (~165 MB) came
 # back on every source change and a separate `go mod download` layer

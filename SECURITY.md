@@ -17,11 +17,6 @@ reporting: open the repository's **Security** tab and choose **Report a
 vulnerability**. Do not open a public issue, pull request or discussion for a
 suspected vulnerability.
 
-Private vulnerability reporting can only be enabled once this repository is
-public. Until then the repository is private, so only its collaborators can
-read this file; raise a suspected vulnerability with the maintainer directly
-on GitHub.
-
 This is a personal project maintained on a best-effort basis. Reports are
 acknowledged and fixed as time allows, and the fix is credited in the
 changelog unless you ask otherwise.

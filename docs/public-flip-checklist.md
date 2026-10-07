@@ -4,6 +4,11 @@ Everything that must be done, in order, before this repository's visibility
 changes from private to public, and the settings that only become available
 once it is public. Tick each box in the pull request that performs it.
 
+Section 1 was done in a private development repository. This repository was
+created on 2026-10-07 from a history-free snapshot of it, and sections 2–5
+are done here. Pull request numbers in section 1 refer to the development
+repository.
+
 Action SHAs below were resolved on 2026-09-28. Re-resolve each one from its
 release tag at the time you add it; never type a SHA from memory.
 
@@ -33,12 +38,12 @@ release tag at the time you add it; never type a SHA from memory.
       Support removes only sensitive data. The push-event payload in Actions
       run logs and build records repeats the addresses too. So either accept
       the addresses as they are, or publish a new repository from rewritten
-      history and keep this one private (issues can be transferred, pull
+      history and keep the old one private (issues can be transferred, pull
       requests cannot). Decide explicitly. Either way, set `user.email` to the
       `users.noreply.github.com` address before committing here, so new pull
       request heads add no address.
       **Decided 2026-10-04:** publish a new repository from a history-free
-      snapshot of `main` (`git archive`), and keep this repository private.
+      snapshot of `main` (`git archive`), and keep the private development repository private.
       Sections 2–5 then apply to the new repository. Its first commit must
       use the noreply address.
 - [x] **Test fixtures** under `haos_exporter/testdata` hold only generic,
@@ -53,18 +58,18 @@ release tag at the time you add it; never type a SHA from memory.
       `apparmor.txt`) and the auth defaults (mandatory basic auth,
       `tls_mode: self_signed`), by someone other than the author of the
       current version. Record the reviewer and date in the pull request.
-      Done: the review on 2026-10-03 (#9) found 1 should-fix and 5 nits, all
-      fixed (#9, #10, #11, #12, #13). The confirmation pass on 2026-10-04
+      Done: the review on 2026-10-03 (PR 9) found 1 should-fix and 5 nits,
+      all fixed (PRs 9–13). The confirmation pass on 2026-10-04
       (GitHub Copilot CLI 1.0.91, `gpt-6.1-sol`, over `ece97c0..b82a01d`)
       found **no open issue**. Copilot's content policy kept `.github/` out
       of that review, so the workflows and Dependabot configuration had their
       own review on 2026-10-04 (Gemini 3.1 Pro, Antigravity CLI): 1
-      should-fix and 2 nits, all addressed in #16, and its re-check found
+      should-fix and 2 nits, all addressed in PR 16, and its re-check found
       **no open issue**.
 - [x] **Re-run both scans last**, after every other box in this section:
       review fixes and the pull requests that tick these boxes add commits.
-      Done 2026-10-04, last on the tree of #16, after the assessment's doc
-      fixes (#15) and the workflow review's fixes (#16):
+      Done 2026-10-04, last on the tree of PR 16, after the assessment's doc
+      fixes (PR 15) and the workflow review's fixes (PR 16):
       - gitleaks: no leaks, over every ref and the `git archive` snapshot
         (70 files);
       - the strings scan, with 23 pattern classes, each proven on a canary
@@ -72,43 +77,56 @@ release tag at the time you add it; never type a SHA from memory.
 
       The history, the issue and PR text, and the Actions logs still hold the
       owner's personal email and references to a private repository. That is
-      why this repository stays private and only the snapshot is published.
+      why the private development repository stays private and only the snapshot is published.
 
 ## 2. The flip
 
-- [ ] Change the repository visibility to public.
+- [x] Change the repository visibility to public.
+      Done 2026-10-07. The repository was created private, and its first
+      commit's tree is identical to the scanned snapshot. Before the flip,
+      the strings scan and an email check covered every log and artifact of
+      the first runs (CI on push, both Dependabot pull requests, Dependabot's
+      own jobs) and the Dependabot pull request text: nothing
+      deployment-specific and no personal address.
 
 ## 3. Immediately after: repository settings
 
 These are unavailable on a free private repository and become available
 when it is public.
 
-- [ ] **Secret scanning** enabled, and **push protection** enabled.
-- [ ] **Private vulnerability reporting** enabled in the repository's security settings.
+- [x] **Secret scanning** enabled, and **push protection** enabled.
+- [x] **Private vulnerability reporting** enabled in the repository's security settings.
       `SECURITY.md` already points to it.
-- [ ] Remove `SECURITY.md`'s private-phase paragraph ("Private
+- [x] Remove `SECURITY.md`'s private-phase paragraph ("Private
       vulnerability reporting can only be enabled once this repository is
       public ...") in the same change.
-- [ ] **Dependabot alerts** and **Dependabot security updates** still
+- [x] **Dependabot alerts** and **Dependabot security updates** still
       enabled (they work while private; check they survived the flip).
-- [ ] **Actions settings**: default workflow token permissions set to
+      Enabled on creation and read back after the flip.
+- [x] **Actions settings**: default workflow token permissions set to
       read-only; "Allow GitHub Actions to create and approve pull requests"
       off; approval required before running workflows from fork pull
-      requests by outside contributors.
-- [ ] **Ruleset on `main`**:
-  - [ ] block force pushes;
-  - [ ] block deletion;
-  - [ ] require a pull request before merging;
-  - [ ] require status checks: the `ci.yml` jobs (Go, gitleaks, image,
-        manifest), and CodeQL once added;
-  - [ ] repository admin on the bypass list.
-- [ ] **Require signed commits**, but **only with repository admin on the
+      requests by outside contributors. The token settings were set before
+      the first push; fork approval (all outside contributors) can only be
+      set on a public repository, so it was set right after the flip.
+- [x] **Ruleset on `main`**:
+  - [x] block force pushes;
+  - [x] block deletion;
+  - [x] require a pull request before merging (squash only);
+  - [x] require status checks: the `ci.yml` jobs (Go, gitleaks, image,
+        manifest), and CodeQL once added. Each check is pinned to the
+        GitHub Actions app, so a status from anything else does not count;
+  - [x] repository admin on the bypass list, in "pull requests only" mode:
+        an admin can merge a pull request past a rule, but cannot push to
+        `main` directly.
+- [x] **Require signed commits**, but **only with repository admin on the
       bypass list**. GitHub checks every commit a pull request introduces,
       including unsigned commits on the head branch, so unsigned head commits
       block even a squash merge, although GitHub signs the squash commit
       itself. Without the bypass, every pull request authored without local
       commit signing is unmergeable. Dependabot's commits are signed by
       GitHub and pass.
+      Done 2026-10-07 in the same ruleset as above, under the same bypass.
 
 ## 4. After the flip: CI and supply chain
 
