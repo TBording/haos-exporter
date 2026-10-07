@@ -18,13 +18,18 @@ on:
 permissions:
   contents: read
 
+# A newer push to the same ref replaces a running analysis.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   analyze:
     name: CodeQL (Go)
     runs-on: ubuntu-24.04
     permissions:
       contents: read
-      security-events: write
+      security-events: write # upload the analysis results
     env:
       # Fail rather than silently download a different Go toolchain.
       GOTOOLCHAIN: local
