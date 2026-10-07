@@ -7,13 +7,20 @@ All notable changes to this app are recorded here. The format follows
 Bump `version` in `config.yaml` whenever `apparmor.txt` changes: the
 Supervisor reloads the AppArmor profile only on install or update.
 
-## [Unreleased]
+## [0.4.1] - 2026-10-07
 
 ### Changed
 
 - The manifest names the published image, `ghcr.io/tbording/haos-exporter`,
   so the app is installed from this repository and the Supervisor pulls the
   signed image for its platform instead of building it on the device.
+- `github.com/prometheus/common` 0.71.0 → 0.72.0.
+
+### Security
+
+- The release build may reach only the network endpoints it needs
+  (harden-runner in block mode); a compromised build step cannot reach any
+  host outside that list.
 
 ## [0.4.0] - 2026-10-07
 
