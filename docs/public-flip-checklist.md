@@ -145,7 +145,7 @@ when it is public.
       Enterprise-only, so it was deferred until now. Done with v2.22.0
       (`351661ca32ac09a36dc5ee2d536e3128f2a3c8ed`, the current release on
       2026-10-07) in every job of every workflow.
-- [ ] **Release workflow** that, on a version tag, builds `linux/amd64` and
+- [x] **Release workflow** that, on a version tag, builds `linux/amd64` and
       `linux/arm64` and publishes to GHCR (`ghcr.io/tbording/haos-exporter`)
       with immutable, versioned tags only, never a rolling `latest`. It
       needs `packages: write` and `id-token: write` on that job only, and
@@ -153,15 +153,29 @@ when it is public.
       (`dbcb813823bdd20940b903addbd779551569679f`) and
       `docker/metadata-action` v6.2.0
       (`dc802804100637a589fabce1cb79ff13a1411302`).
-  - [ ] **cosign keyless signing**: `sigstore/cosign-installer` v4.1.2
+      Done in `release.yml`. `docker/metadata-action` turned out unnecessary:
+      the single version tag and the revision label are set directly, which
+      keeps one third-party action out of the most privileged job. The tag
+      must match `config.yaml`'s version and be on `main`; a published
+      version is never replaced. `v0.4.0` published on 2026-10-07 (run
+      37581640422): index `sha256:db45add3c4bc…`, amd64 `sha256:503c0d53672f…`,
+      arm64 `sha256:fcce4e8e7a98…`, each with the right `io.hass.arch`.
+  - [x] **cosign keyless signing**: `sigstore/cosign-installer` v4.1.2
         (`6f9f17788090df1f26f669e9d70d6ae9567deba6`) with
         `cosign-release: v3.1.3`; sign by digest.
-  - [ ] **SLSA provenance**: `actions/attest-build-provenance` v4.2.2
+  - [x] **SLSA provenance**: `actions/attest-build-provenance` v4.2.2
         (`4d101475d8b20a2381f78447822ac1eab6504dd8`).
-  - [ ] **SBOM attestation**: `actions/attest-sbom` v4.1.0
+  - [x] **SBOM attestation**: `actions/attest-sbom` v4.1.0
         (`c604332985a26aa8cf1bdc465b92731239ec6b9e`) over the SPDX SBOM.
-  - [ ] Verification documented and tried once: `cosign verify` with the
+        `attest-sbom` is deprecated and only wraps `actions/attest`, so
+        `actions/attest` v4.2.2 is used directly, once per platform image.
+  - [x] Verification documented and tried once: `cosign verify` with the
         workflow identity, and `gh attestation verify`.
+        Documented in the README (Releases). Tried on 2026-10-07 against
+        `0.4.0`: cosign verified the index and both images, and rejected a
+        wrong workflow identity; `gh attestation verify` verified the SLSA
+        provenance of the index and the SPDX 2.3 SBOM of each image, and
+        rejected the wrong repository.
   - Why this waited for the flip: keyless signing writes a permanent entry
     to the public Rekor transparency log. The signing certificate records
     the repository name, workflow path, refs, commit SHAs, run IDs and the
@@ -169,15 +183,21 @@ when it is public.
     have published the repository's existence and its "private" status,
     permanently. GitHub's own attestations are not available on a free
     private repository at all.
-- [ ] Make the **GHCR package public**. This is **irreversible**: a public
+- [x] Make the **GHCR package public**. This is **irreversible**: a public
       package cannot be made private again.
-- [ ] Add `image: ghcr.io/tbording/haos-exporter` to `config.yaml`, with
+      It became public by itself: a package first published by a public
+      repository's workflow inherits the repository's visibility. So it was
+      public from the first push, before the verification above rather than
+      after it. The verification then passed, and an anonymous pull works.
+- [x] Add `image: ghcr.io/tbording/haos-exporter` to `config.yaml`, with
       `version` matching a published tag, and move `image` from
       `FORBIDDEN_KEYS` to `ALLOWED_KEYS` in `ci/check_manifest.py`. Installing from the GitHub
       repository is a different app from the local one (its slug gets the
       repository's prefix instead of `local_`), so this is a **reinstall**:
       uninstall the local app, add the repository, install, and enter the
       options again. The AppArmor profile is loaded under the new slug.
+      `check_manifest.py` now requires `image` to be exactly that name, with
+      no tag and no `{arch}`. The reinstall is recorded with the next box.
 - [ ] **Place the TLS files again under the new slug.** The reinstall gives
       the app a new config folder, `/app_configs/<repo-prefix>_haos_exporter`.
       Generate a new server pair there (DOCS.md, Verified TLS), copy

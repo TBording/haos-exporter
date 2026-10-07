@@ -51,6 +51,7 @@ unknown keys, so a typo would otherwise go unnoticed.
 | `watchdog: tcp://[HOST]:[PORT:9100]` | The Supervisor restarts the app when the port stops accepting connections | Not a privilege |
 | `map: app_config` (read-only) | This app's own config folder at `/config`, which no other app sees unless it maps every app's config folder | `tls_mode: provided` and `tls_client_auth` read `server.crt`, `server.key` and `client-ca.crt` there. The AppArmor profile allows exactly those three reads |
 | `backup_exclude: ["*.key"]` | Leaves matching files out of Home Assistant backups | Not a privilege. The server key never enters a backup; after a restore, a new one is generated |
+| `image: ghcr.io/tbording/haos-exporter` | The Supervisor pulls `image:version` instead of building on the device | Not a privilege. Every published version is signed and attested (see [Releases](#releases)), and CI fails if `image` names anything else |
 
 ### Not requested
 
@@ -73,7 +74,6 @@ unknown keys, so a typo would otherwise go unnoticed.
 | Any other `map` type, or `app_config` writable | Bind mounts of `homeassistant_config`, `share`, `backup`, `ssl`, `media` and so on, or write access to `/config` | Nothing; backup sizes come from the API, `/data` is always mounted, and the exporter only reads `/config` |
 | `ingress` | A Home Assistant-authenticated web UI. +2 rating | A scraper outside Home Assistant cannot pass ingress authentication |
 | Protection mode off | Allows `host_pid`, `docker_api`, `full_access` | None of them is requested |
-| `image` | Pulling a prebuilt image from a registry | Not a privilege. Omitted while the repository is private, so the Supervisor builds the image on the device; see the checklist |
 
 ### What the manifest cannot express
 
@@ -187,24 +187,23 @@ roles. CI pins `hassio_role: default` in the manifest.
   metrics stop without an error. The exporter will not take `manager` to keep
   them; DESIGN.md has the plan and the alerts to set.
 
-## Install as a local app
+## Install
 
-While the repository is private there is no published image; the Supervisor
-builds the image on the device from `haos_exporter/Dockerfile`.
+The Supervisor pulls the published image, `ghcr.io/tbording/haos-exporter`,
+tagged with the manifest's `version`.
 
-1. Copy the `haos_exporter/` folder into the local apps folder on the device
-   (`/local_apps` in the Terminal & SSH and Samba apps).
-2. In the app store, reload (⋮ → **Check for updates**). **HAOS Exporter**
-   appears under local apps. Install it.
+1. In the app store, open ⋮ → **Repositories** and add
+   `https://github.com/TBording/haos-exporter`. **HAOS Exporter** appears in
+   the store. Install it.
+2. Turn on **Watchdog** in the app's Info tab. It is off by default.
 3. Generate a bcrypt hash of a long random password (see
    [DOCS.md](haos_exporter/DOCS.md#generating-the-password-hash)) and set it
    as `basic_auth_password_hash`.
 4. Start the app and add the scrape config from DOCS.md to Prometheus.
 5. Check `haos_exporter_security_check`: every check should be `1`.
 
-After changing `apparmor.txt`, bump `version` in `config.yaml` and update the
-app: the Supervisor reloads the profile only on install or update, never on
-rebuild.
+After changing `apparmor.txt`, bump `version` in `config.yaml` and release
+that version: the Supervisor reloads the profile only on install or update.
 
 ## Development
 

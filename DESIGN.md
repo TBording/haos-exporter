@@ -381,7 +381,8 @@ In short:
   pinned by digest.
 - The Go module lives inside the app folder, so the folder is a complete build
   context: the Supervisor builds it locally when the manifest has no `image:`.
-- Private phase: installed as a local app from `/local_apps`, built on the
-  device. No registry, no registry credentials in the Supervisor.
-- At the public flip: images published to GHCR, signed and attested; see
-  `docs/public-flip-checklist.md`.
+- Until 2026-10-07 (private phase): installed as a local app from
+  `/local_apps`, built on the device.
+- Since 0.4.0: `.github/workflows/release.yml` publishes the multi-arch image
+  to GHCR, signed and attested, and the manifest's `image:` points at it. The
+  package is public, so the Supervisor holds no registry credentials.
