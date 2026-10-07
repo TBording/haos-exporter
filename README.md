@@ -45,7 +45,7 @@ to your home as possible.
 | 💾 | **Data disk** | Free space on the data partition. Below 2 GiB the Supervisor refuses updates, backups and app installs, so you want to know first. |
 | 🩺 | **Supervisor** | Whether it is healthy and supported, plus the resolution center's issues, suggestions and the reasons behind them. |
 | 🔄 | **Updates** | Installed and latest versions of Core, Supervisor and OS, and which apps have an update waiting. |
-| 📦 | **Apps** | The state of every installed app: started, stopped or in error. |
+| 📦 | **Apps** | The state of your installed apps: started, stopped or in error. |
 | 🗄️ | **Backups** | How many there are, how big they are, and when the newest one was made, per type. |
 | 💓 | **Core** | Whether Home Assistant's web server answers. |
 | 🔎 | **Itself** | Whether each collector is working, and a security self-check at every start. |
@@ -85,8 +85,9 @@ HAOS Exporter asks for as little as it can:
   or call services.
 - **Protection mode stays on.** No host network, host PID, Docker socket or
   hardware access.
-- **A custom AppArmor profile in enforce mode.** The process cannot write
-  outside `/tmp`, cannot start other programs, and has no capabilities.
+- **A custom AppArmor profile in enforce mode.** The process can write only
+  to `/tmp` and `/dev/null`, cannot start other programs, and has no
+  capabilities.
 - **Non-root, in a distroless image** with no shell and no package manager.
 - **A password is required and HTTPS is on by default.** The app will not
   start without a password hash. Prometheus can also pin the app's
@@ -228,7 +229,7 @@ and add a scrape job:
 scrape_configs:
   - job_name: haos
     scrape_interval: 15s
-    scrape_timeout: 10s # the exporter answers within 9 s
+    scrape_timeout: 10s # the exporter's handler times out at 9 s
     scheme: https
     tls_config:
       # The default certificate is new at every start, so there is nothing to
@@ -392,16 +393,17 @@ against the released image:
 
 ### Log lines that are expected
 
-Some lines at every start look like errors but prove the confinement works.
-Each self-check makes a request that must fail:
+At every start, two self-checks make requests that must fail. Their log
+lines look like errors, but they prove the confinement works:
 
 - **The host log** shows one AppArmor `DENIED` line: the write attempt under
   `/dev/shm`, which the profile must block.
 - **The Supervisor log** shows `/addons no role for <app slug>`, then
   `Invalid token for access /addons`: a `manager`-only request, refused
   because the token is below `manager`.
-- **The Supervisor log** also shows `<path> access from <app>` lines at INFO,
-  about 4,000 a day, one for each background poll.
+
+The Supervisor log also shows a `<path> access from <app>` line at INFO for
+each background poll, about 4,000 a day.
 
 ## Permissions
 
