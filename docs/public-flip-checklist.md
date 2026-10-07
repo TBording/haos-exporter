@@ -116,8 +116,8 @@ when it is public.
       (`2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2` as of 2026-09-28), with
       top-level `permissions: contents: read` and `security-events: write`
       on that job only. Done in `codeql.yml` (re-resolved 2026-10-07: still
-      v4.38.2 at that SHA); added to the ruleset's required checks once it
-      had run on `main`.
+      v4.38.2 at that SHA). It joins the ruleset's required checks once it
+      has run on `main`.
 - [x] **Dependency review** on pull requests (available for public
       repositories), SHA-pinned. Done in `dependency-review.yml`
       (`actions/dependency-review-action` v5.0.0), failing on high severity.
