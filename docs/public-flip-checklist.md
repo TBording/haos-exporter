@@ -130,16 +130,21 @@ when it is public.
 
 ## 4. After the flip: CI and supply chain
 
-- [ ] **CodeQL** for Go: `github/codeql-action` v4.38.2
+- [x] **CodeQL** for Go: `github/codeql-action` v4.38.2
       (`2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2` as of 2026-09-28), with
       top-level `permissions: contents: read` and `security-events: write`
-      on that job only.
-- [ ] **Dependency review** on pull requests (available for public
-      repositories), SHA-pinned.
-- [ ] **harden-runner** (`step-security/harden-runner` v2.21.1,
+      on that job only. Done in `codeql.yml` (re-resolved 2026-10-07: still
+      v4.38.2 at that SHA). It joins the ruleset's required checks once it
+      has run on `main`.
+- [x] **Dependency review** on pull requests (available for public
+      repositories), SHA-pinned. Done in `dependency-review.yml`
+      (`actions/dependency-review-action` v5.0.0), failing on high severity.
+- [x] **harden-runner** (`step-security/harden-runner` v2.21.1,
       `e14015d583714f6e62063499dc959a02595150a1`) as the first step of each
       job, starting in audit mode. Its private-repository tier is
-      Enterprise-only, so it was deferred until now.
+      Enterprise-only, so it was deferred until now. Done with v2.22.0
+      (`351661ca32ac09a36dc5ee2d536e3128f2a3c8ed`, the current release on
+      2026-10-07) in every job of every workflow.
 - [ ] **Release workflow** that, on a version tag, builds `linux/amd64` and
       `linux/arm64` and publishes to GHCR (`ghcr.io/tbording/haos-exporter`)
       with immutable, versioned tags only, never a rolling `latest`. It

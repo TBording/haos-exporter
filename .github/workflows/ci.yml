@@ -11,6 +11,8 @@
 #   release's checksums file. Dependabot cannot see these versions;
 #   .github/dependabot.yml lists what to bump by hand.
 # - The token is read-only for every job; no job asks for more.
+# - step-security/harden-runner is the first step of every job, in audit
+#   mode: it records each job's network egress without blocking it yet.
 
 name: CI
 
@@ -33,6 +35,10 @@ jobs:
       # Fail rather than silently download a different Go toolchain.
       GOTOOLCHAIN: local
     steps:
+      - uses: step-security/harden-runner@351661ca32ac09a36dc5ee2d536e3128f2a3c8ed # v2.22.0
+        with:
+          egress-policy: audit
+
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
@@ -67,6 +73,10 @@ jobs:
       # gitleaks_8.30.1_checksums.txt. Update both lines together.
       GITLEAKS_SHA256: 551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb
     steps:
+      - uses: step-security/harden-runner@351661ca32ac09a36dc5ee2d536e3128f2a3c8ed # v2.22.0
+        with:
+          egress-policy: audit
+
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
@@ -87,6 +97,10 @@ jobs:
     name: Image (build, grype, SBOM, attestations)
     runs-on: ubuntu-24.04
     steps:
+      - uses: step-security/harden-runner@351661ca32ac09a36dc5ee2d536e3128f2a3c8ed # v2.22.0
+        with:
+          egress-policy: audit
+
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
@@ -190,6 +204,10 @@ jobs:
     name: Manifest and AppArmor profile
     runs-on: ubuntu-24.04
     steps:
+      - uses: step-security/harden-runner@351661ca32ac09a36dc5ee2d536e3128f2a3c8ed # v2.22.0
+        with:
+          egress-policy: audit
+
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
