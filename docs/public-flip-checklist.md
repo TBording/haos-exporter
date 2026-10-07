@@ -198,18 +198,38 @@ when it is public.
       options again. The AppArmor profile is loaded under the new slug.
       `check_manifest.py` now requires `image` to be exactly that name, with
       no tag and no `{arch}`. The reinstall is recorded with the next box.
-- [ ] **Place the TLS files again under the new slug.** The reinstall gives
+- [x] **Place the TLS files again under the new slug.** The reinstall gives
       the app a new config folder, `/app_configs/<repo-prefix>_haos_exporter`.
       Generate a new server pair there (DOCS.md, Verified TLS), copy
       `client-ca.crt`, re-pin Prometheus, and delete the old
       `/app_configs/local_haos_exporter`, which survives uninstall and still
       holds the old key.
-- [ ] Re-run the whole CI on `main` after all of the above and confirm every
+      Done 2026-10-07 as `bbee2835_haos_exporter`, with one deviation: the
+      existing pair and `client-ca.crt` were copied (`cp -p`, owner and mode
+      kept) into the new folder before the first start, instead of a new
+      pair being generated. The key never left the device, so Prometheus's
+      pin did not change. The options were copied through the Supervisor
+      API, and the watchdog turned on. The switch from the stopped local app
+      to the new one took about 2 s. After the scrape, all five security
+      checks, the client-certificate refusal and the app list were verified,
+      the local app was uninstalled with `--remove-config`, which deleted
+      `/app_configs/local_haos_exporter` and its key, and its source in
+      `/local_apps` was removed.
+- [x] Re-run the whole CI on `main` after all of the above and confirm every
       required check passes.
+      Done: `main` at the last repository change (the `image:` manifest)
+      passed all five required checks (Go, gitleaks, image, manifest,
+      CodeQL).
 
 ## 5. Sign-off
 
-- [ ] Every box above is ticked, and the independent review found no open
-      issue.
+- [x] Every box above is ticked, and the independent review found no open
+      issue. The reviews: the manifest and auth review and its confirmation
+      pass (section 1), the review of `.github/` in the development
+      repository, and the review of this repository's new workflows (#5);
+      each ended with no open issue.
+
+Sections 2–5 were carried out on 2026-10-07 by Claude Code under the
+owner's authorization. The signature below is the owner's.
 
 Signed off by: ____________________  Date: ____________
