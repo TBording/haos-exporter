@@ -7,7 +7,7 @@ All notable changes to this app are recorded here. The format follows
 Bump `version` in `config.yaml` whenever `apparmor.txt` changes: the
 Supervisor reloads the AppArmor profile only on install or update.
 
-## [Unreleased]
+## [0.4.2] - 2026-10-07
 
 ### Added
 

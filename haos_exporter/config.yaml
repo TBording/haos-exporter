@@ -27,7 +27,7 @@
 #   Supervisor pulls image:version for the device's platform instead of
 #   building; every published version is signed with cosign and attested.
 name: HAOS Exporter
-version: "0.4.1"
+version: "0.4.2"
 slug: haos_exporter
 description: >-
   Prometheus exporter for Home Assistant OS: host, Supervisor, update, app and
