@@ -1,0 +1,6 @@
+1000 900 0:50 / / rw,relatime master:1 - overlay overlay rw,lowerdir=/var/lib/docker/overlay2/l/EXAMPLE,upperdir=/var/lib/docker/overlay2/example/diff,workdir=/var/lib/docker/overlay2/example/work
+1001 1000 0:51 / /proc rw,nosuid,nodev,noexec,relatime - proc proc rw
+1002 1000 0:52 / /dev ro,nosuid,relatime - devtmpfs devtmpfs rw,size=10240k,nr_inodes=1000,mode=755
+1003 1002 0:53 / /dev/shm rw,nosuid,nodev,noexec,relatime - tmpfs shm rw,size=65536k
+1010 1000 8:8 /supervisor/apps/data/local_example /data rw,relatime - ext4 /dev/sda8 rw,commit=30
+1011 1000 0:54 / /tmp rw,nosuid,nodev,noexec,relatime - tmpfs tmpfs rw

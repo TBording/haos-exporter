@@ -1,0 +1,171 @@
+# HELP haos_exporter_collector_success 1 if the collector's last run (for a Supervisor-backed collector, its last poll) succeeded; 0 if it failed, in which case none of its own series are emitted.
+# TYPE haos_exporter_collector_success gauge
+haos_exporter_collector_success{collector="disk"} 1
+haos_exporter_collector_success{collector="host"} 1
+haos_exporter_collector_success{collector="pressure"} 1
+# HELP haos_exporter_series_dropped_total Apps, feature flags, boot slots, resolution reasons, resolution (type, context) pairs or disk devices left out of the metrics, by cap or failed validation.
+# TYPE haos_exporter_series_dropped_total counter
+haos_exporter_series_dropped_total{collector="disk",reason="cap"} 0
+# HELP node_boot_time_seconds Host boot time in Unix seconds, from /proc/stat btime.
+# TYPE node_boot_time_seconds gauge
+node_boot_time_seconds 1.767225593e+09
+# HELP node_cpu_seconds_total Seconds the CPUs spent in each mode, from /proc/stat.
+# TYPE node_cpu_seconds_total counter
+node_cpu_seconds_total{cpu="0",mode="idle"} 250
+node_cpu_seconds_total{cpu="0",mode="iowait"} 0.2
+node_cpu_seconds_total{cpu="0",mode="irq"} 0.03
+node_cpu_seconds_total{cpu="0",mode="nice"} 0.1
+node_cpu_seconds_total{cpu="0",mode="softirq"} 0.05
+node_cpu_seconds_total{cpu="0",mode="steal"} 0.02
+node_cpu_seconds_total{cpu="0",mode="system"} 1.5
+node_cpu_seconds_total{cpu="0",mode="user"} 5
+node_cpu_seconds_total{cpu="1",mode="idle"} 250
+node_cpu_seconds_total{cpu="1",mode="iowait"} 0.2
+node_cpu_seconds_total{cpu="1",mode="irq"} 0.03
+node_cpu_seconds_total{cpu="1",mode="nice"} 0.1
+node_cpu_seconds_total{cpu="1",mode="softirq"} 0.05
+node_cpu_seconds_total{cpu="1",mode="steal"} 0.03
+node_cpu_seconds_total{cpu="1",mode="system"} 1.5
+node_cpu_seconds_total{cpu="1",mode="user"} 5
+# HELP node_disk_discard_time_seconds_total The total number of seconds spent by all discards. From /proc/diskstats.
+# TYPE node_disk_discard_time_seconds_total counter
+node_disk_discard_time_seconds_total{device="sda"} 0.055
+node_disk_discard_time_seconds_total{device="sda1"} 0
+node_disk_discard_time_seconds_total{device="sda8"} 0.05
+# HELP node_disk_discarded_sectors_total The total number of sectors discarded successfully. From /proc/diskstats.
+# TYPE node_disk_discarded_sectors_total counter
+node_disk_discarded_sectors_total{device="sda"} 81920
+node_disk_discarded_sectors_total{device="sda1"} 0
+node_disk_discarded_sectors_total{device="sda8"} 80000
+# HELP node_disk_discards_completed_total The total number of discards completed successfully. From /proc/diskstats.
+# TYPE node_disk_discards_completed_total counter
+node_disk_discards_completed_total{device="sda"} 1200
+node_disk_discards_completed_total{device="sda1"} 0
+node_disk_discards_completed_total{device="sda8"} 1100
+# HELP node_disk_discards_merged_total The total number of discards merged. From /proc/diskstats.
+# TYPE node_disk_discards_merged_total counter
+node_disk_discards_merged_total{device="sda"} 3
+node_disk_discards_merged_total{device="sda1"} 0
+node_disk_discards_merged_total{device="sda8"} 2
+# HELP node_disk_flush_requests_time_seconds_total The total number of seconds spent by all flush requests. From /proc/diskstats.
+# TYPE node_disk_flush_requests_time_seconds_total counter
+node_disk_flush_requests_time_seconds_total{device="sda"} 0.9
+node_disk_flush_requests_time_seconds_total{device="sda1"} 0
+node_disk_flush_requests_time_seconds_total{device="sda8"} 0.88
+# HELP node_disk_flush_requests_total The total number of flush requests completed successfully. From /proc/diskstats.
+# TYPE node_disk_flush_requests_total counter
+node_disk_flush_requests_total{device="sda"} 40000
+node_disk_flush_requests_total{device="sda1"} 0
+node_disk_flush_requests_total{device="sda8"} 39000
+# HELP node_disk_io_now The number of I/Os currently in progress. From /proc/diskstats.
+# TYPE node_disk_io_now gauge
+node_disk_io_now{device="sda"} 1
+node_disk_io_now{device="sda1"} 0
+node_disk_io_now{device="sda8"} 2
+# HELP node_disk_io_time_seconds_total Total seconds spent doing I/Os. From /proc/diskstats.
+# TYPE node_disk_io_time_seconds_total counter
+node_disk_io_time_seconds_total{device="sda"} 330
+node_disk_io_time_seconds_total{device="sda1"} 0.06
+node_disk_io_time_seconds_total{device="sda8"} 320
+# HELP node_disk_io_time_weighted_seconds_total The weighted number of seconds spent doing I/Os. From /proc/diskstats.
+# TYPE node_disk_io_time_weighted_seconds_total counter
+node_disk_io_time_weighted_seconds_total{device="sda"} 614.022
+node_disk_io_time_weighted_seconds_total{device="sda1"} 0.051000000000000004
+node_disk_io_time_weighted_seconds_total{device="sda8"} 603.5
+# HELP node_disk_read_bytes_total The total number of bytes read successfully. From /proc/diskstats.
+# TYPE node_disk_read_bytes_total counter
+node_disk_read_bytes_total{device="sda"} 9.50436352e+08
+node_disk_read_bytes_total{device="sda1"} 6.144e+06
+node_disk_read_bytes_total{device="sda8"} 8.192e+08
+# HELP node_disk_read_time_seconds_total The total number of seconds spent by all reads. From /proc/diskstats.
+# TYPE node_disk_read_time_seconds_total counter
+node_disk_read_time_seconds_total{device="sda"} 4.0200000000000005
+node_disk_read_time_seconds_total{device="sda1"} 0.05
+node_disk_read_time_seconds_total{device="sda8"} 3.5
+# HELP node_disk_reads_completed_total The total number of reads completed successfully. From /proc/diskstats.
+# TYPE node_disk_reads_completed_total counter
+node_disk_reads_completed_total{device="sda"} 9001
+node_disk_reads_completed_total{device="sda1"} 300
+node_disk_reads_completed_total{device="sda8"} 80000
+# HELP node_disk_reads_merged_total The total number of reads merged. From /proc/diskstats.
+# TYPE node_disk_reads_merged_total counter
+node_disk_reads_merged_total{device="sda"} 120
+node_disk_reads_merged_total{device="sda1"} 0
+node_disk_reads_merged_total{device="sda8"} 100
+# HELP node_disk_write_time_seconds_total The total number of seconds spent by all writes. From /proc/diskstats.
+# TYPE node_disk_write_time_seconds_total counter
+node_disk_write_time_seconds_total{device="sda"} 610.0020000000001
+node_disk_write_time_seconds_total{device="sda1"} 0.001
+node_disk_write_time_seconds_total{device="sda8"} 600
+# HELP node_disk_writes_completed_total The total number of writes completed successfully. From /proc/diskstats.
+# TYPE node_disk_writes_completed_total counter
+node_disk_writes_completed_total{device="sda"} 250001
+node_disk_writes_completed_total{device="sda1"} 2
+node_disk_writes_completed_total{device="sda8"} 240000
+# HELP node_disk_writes_merged_total The number of writes merged. From /proc/diskstats.
+# TYPE node_disk_writes_merged_total counter
+node_disk_writes_merged_total{device="sda"} 3000
+node_disk_writes_merged_total{device="sda1"} 0
+node_disk_writes_merged_total{device="sda8"} 2900
+# HELP node_disk_written_bytes_total The total number of bytes written successfully. From /proc/diskstats.
+# TYPE node_disk_written_bytes_total counter
+node_disk_written_bytes_total{device="sda"} 4.8379496448e+10
+node_disk_written_bytes_total{device="sda1"} 8192
+node_disk_written_bytes_total{device="sda8"} 4.8128e+10
+# HELP node_filesystem_avail_bytes Data partition bytes available to unprivileged users (f_bavail); the Supervisor's "free".
+# TYPE node_filesystem_avail_bytes gauge
+node_filesystem_avail_bytes{device="/dev/sda8",fstype="ext4",mountpoint="/mnt/data"} 1.47456e+10
+# HELP node_filesystem_free_bytes Data partition free bytes including root-reserved blocks (f_bfree).
+# TYPE node_filesystem_free_bytes gauge
+node_filesystem_free_bytes{device="/dev/sda8",fstype="ext4",mountpoint="/mnt/data"} 1.6384e+10
+# HELP node_filesystem_size_bytes Data partition size in bytes (f_blocks × f_frsize).
+# TYPE node_filesystem_size_bytes gauge
+node_filesystem_size_bytes{device="/dev/sda8",fstype="ext4",mountpoint="/mnt/data"} 3.2768e+10
+# HELP node_load1 1m load average, from /proc/loadavg.
+# TYPE node_load1 gauge
+node_load1 0.25
+# HELP node_load15 15m load average, from /proc/loadavg.
+# TYPE node_load15 gauge
+node_load15 0.75
+# HELP node_load5 5m load average, from /proc/loadavg.
+# TYPE node_load5 gauge
+node_load5 0.5
+# HELP node_memory_Buffers_bytes Memory information field Buffers, from /proc/meminfo.
+# TYPE node_memory_Buffers_bytes gauge
+node_memory_Buffers_bytes 1.024e+08
+# HELP node_memory_Cached_bytes Memory information field Cached, from /proc/meminfo.
+# TYPE node_memory_Cached_bytes gauge
+node_memory_Cached_bytes 2.048e+09
+# HELP node_memory_MemAvailable_bytes Memory information field MemAvailable, from /proc/meminfo.
+# TYPE node_memory_MemAvailable_bytes gauge
+node_memory_MemAvailable_bytes 3.072e+09
+# HELP node_memory_MemFree_bytes Memory information field MemFree, from /proc/meminfo.
+# TYPE node_memory_MemFree_bytes gauge
+node_memory_MemFree_bytes 5.12e+08
+# HELP node_memory_MemTotal_bytes Memory information field MemTotal, from /proc/meminfo.
+# TYPE node_memory_MemTotal_bytes gauge
+node_memory_MemTotal_bytes 4.096e+09
+# HELP node_memory_SwapFree_bytes Memory information field SwapFree, from /proc/meminfo.
+# TYPE node_memory_SwapFree_bytes gauge
+node_memory_SwapFree_bytes 9.216e+08
+# HELP node_memory_SwapTotal_bytes Memory information field SwapTotal, from /proc/meminfo.
+# TYPE node_memory_SwapTotal_bytes gauge
+node_memory_SwapTotal_bytes 1.024e+09
+# HELP node_pressure_cpu_waiting_seconds_total Total time in seconds that processes have waited for CPU time, from /proc/pressure/cpu.
+# TYPE node_pressure_cpu_waiting_seconds_total counter
+node_pressure_cpu_waiting_seconds_total 3086.85082
+# HELP node_pressure_io_stalled_seconds_total Total time in seconds no process could make progress due to IO congestion, from /proc/pressure/io.
+# TYPE node_pressure_io_stalled_seconds_total counter
+node_pressure_io_stalled_seconds_total 31.234567
+# HELP node_pressure_io_waiting_seconds_total Total time in seconds that processes have waited due to IO congestion, from /proc/pressure/io.
+# TYPE node_pressure_io_waiting_seconds_total counter
+node_pressure_io_waiting_seconds_total 41.234567
+# HELP node_pressure_memory_stalled_seconds_total Total time in seconds no process could make progress due to memory congestion, from /proc/pressure/memory.
+# TYPE node_pressure_memory_stalled_seconds_total counter
+node_pressure_memory_stalled_seconds_total 1.234567
+# HELP node_pressure_memory_waiting_seconds_total Total time in seconds that processes have waited for memory, from /proc/pressure/memory.
+# TYPE node_pressure_memory_waiting_seconds_total counter
+node_pressure_memory_waiting_seconds_total 2.345678
+# HELP node_time_seconds Wall clock time at scrape, in Unix seconds.
+# TYPE node_time_seconds gauge
+node_time_seconds 1.7673120005e+09

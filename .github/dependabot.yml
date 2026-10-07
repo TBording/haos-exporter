@@ -1,0 +1,36 @@
+# Dependabot version updates. Security updates and alerts are enabled in the
+# repository settings. Not covered here, so bump by hand: the gitleaks binary
+# (version + sha256 in ci.yml), the govulncheck, grype and syft versions and
+# the BuildKit and SBOM-generator image digests in ci.yml, pyyaml's version and
+# hash in ci/requirements.txt, and the golang image used by the local gate
+# commands in README.md.
+version: 2
+updates:
+  # Workflow actions, pinned by SHA with a `# vX.Y.Z` comment.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      github-actions:
+        patterns: ["*"]
+
+  # Base images in the Dockerfile, pinned as tag@sha256 (digest refreshes too).
+  - package-ecosystem: docker
+    directory: /haos_exporter
+    schedule:
+      interval: weekly
+    groups:
+      base-images:
+        patterns: ["*"]
+
+  # Go modules; the module root is the app folder.
+  - package-ecosystem: gomod
+    directory: /haos_exporter
+    schedule:
+      interval: weekly
+    groups:
+      prometheus:
+        patterns: ["github.com/prometheus/*"]
+      golang-x:
+        patterns: ["golang.org/x/*"]

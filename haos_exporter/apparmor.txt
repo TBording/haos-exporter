@@ -1,0 +1,121 @@
+# Bump version in config.yaml whenever this file changes — the Supervisor
+# reloads the profile only on install/update, never on rebuild (apps/app.py).
+#
+# AppArmor profile for the HAOS Exporter app. Enforce mode.
+#
+# References:
+# - Home Assistant app AppArmor template:
+#   https://developers.home-assistant.io/docs/apps/presentation#apparmor
+# - Docker's default container profile (docker-default):
+#   https://github.com/moby/profiles/blob/main/apparmor/template.go
+#
+# Deliberate differences from both:
+# - No abstractions/base. It grants ptrace readby/tracedby, writes to /dev/log
+#   and the journald sockets, and unix sockets; none of that is needed.
+# - No blanket `file,`, `network,`, `capability,` or `mount` rules. No
+#   capability is granted, and ptrace, mount and unix sockets are not allowed.
+# - No explicit `deny` rules. An explicit deny is silent; an implicit one is
+#   logged as apparmor="DENIED". The deploy check depends on that log line
+#   (the exporter's own write probe to /dev/shm must be denied and logged).
+#
+# Supervisor constraints (supervisor/utils/apparmor.py):
+# - Exactly one line in this file may start with the word "profile" at
+#   column 0. The Supervisor renames that profile to the full app slug
+#   (local_haos_exporter for a local app), so the profile refers to itself
+#   only as @{profile_name}, never by a literal name.
+
+abi <abi/3.0>,
+
+include <tunables/global>
+
+profile haos_exporter flags=(attach_disconnected,mediate_deleted) {
+  # docker stop / docker kill: the container runtime sends SIGTERM, then
+  # SIGKILL. Same three peers as docker-default: the runtime is usually
+  # unconfined, but runc/crun carry their own profiles on some newer hosts.
+  signal (receive) peer=unconfined,
+  signal (receive) peer=runc,
+  signal (receive) peer=crun,
+  # The Go runtime preempts goroutines by sending SIGURG to its own threads.
+  signal (send, receive) peer=@{profile_name},
+
+  # The :9100 listener (dual-stack) and outbound HTTP to the Supervisor and
+  # to Core's /manifest.json.
+  network inet stream,
+  network inet6 stream,
+  # DNS over UDP, should a name ever be resolved through resolv.conf.
+  network inet dgram,
+  network inet6 dgram,
+
+  # The exporter binary itself: read and map. The initial exec is performed
+  # by the unconfined runtime while attaching this profile, so no x rule.
+  /haos-exporter mr,
+
+  # Go net package: host and resolver configuration.
+  /etc/hosts r,
+  /etc/resolv.conf r,
+  /etc/nsswitch.conf r,
+  # Go os/user package: uid/gid to name lookups.
+  /etc/passwd r,
+  /etc/group r,
+  # The Supervisor sets TZ; Go loads the zone on the first timestamp.
+  /etc/localtime r,
+  /usr/share/zoneinfo/{,**} r,
+
+  # stdin inherited from the runtime; AppArmor revalidates inherited file
+  # descriptors at exec. Writes to /dev/null store nothing.
+  /dev/null rw,
+
+  # Host CPU, memory, load and uptime. These files are kernel-global, so they
+  # show the host without host_pid.
+  @{PROC}/stat r,
+  @{PROC}/meminfo r,
+  @{PROC}/loadavg r,
+  @{PROC}/uptime r,
+  # Per-device disk IO (disk collector) and pressure stall information
+  # (pressure collector), also kernel-global. irq exists only with
+  # CONFIG_IRQ_TIME_ACCOUNTING; a missing file is skipped, but a denied one
+  # fails the collector, so a gap here shows as success 0, not as no data.
+  @{PROC}/diskstats r,
+  @{PROC}/pressure/{cpu,io,memory,irq} r,
+
+  # The exporter's own process: process_* collector (stat, limits, fd/),
+  # self-check (status for CapEff, attr/* for the AppArmor label), data
+  # partition device and fstype (mountinfo), Go runtime (cgroup), io.
+  owner @{PROC}/@{pid}/stat r,
+  owner @{PROC}/@{pid}/status r,
+  owner @{PROC}/@{pid}/limits r,
+  owner @{PROC}/@{pid}/io r,
+  owner @{PROC}/@{pid}/fd/ r,
+  owner @{PROC}/@{pid}/mountinfo r,
+  owner @{PROC}/@{pid}/cgroup r,
+  owner @{PROC}/@{pid}/attr/current r,
+  owner @{PROC}/@{pid}/attr/apparmor/current r,
+  # process_network_* bytes. The file belongs to the network namespace and is
+  # owned by root, so an owner rule would never match; read-only either way.
+  @{PROC}/@{pid}/net/netstat r,
+  # Go's net.Listen reads the listen backlog limit once.
+  @{PROC}/sys/net/core/somaxconn r,
+
+  # Go runtime: cgroup-aware GOMAXPROCS (the container's own cgroup only;
+  # cgroupns hides siblings) and the huge page size.
+  /sys/fs/cgroup/{,**} r,
+  /sys/kernel/mm/transparent_hugepage/hpage_pmd_size r,
+
+  # Data partition: statfs("/data") for free/used bytes. The directory entry
+  # only; nothing under /data is read or written.
+  /data/ r,
+
+  # /tmp is the app's tmpfs (tmpfs: true) and the only writable path: the
+  # exporter writes its web-config file here at start.
+  /tmp/ r,
+  owner /tmp/** rw,
+
+  # tls_mode: provided and tls_client_auth: the operator's files in the
+  # app's read-only config folder (map: app_config). Exactly these three
+  # reads. owner on the key: the profile refuses a key file that uid 65532
+  # does not own, alongside the exporter's own mode check (no group or
+  # other bits). ci/check_manifest.py pins these lines.
+  /config/server.crt r,
+  owner /config/server.key r,
+  /config/client-ca.crt r,
+}

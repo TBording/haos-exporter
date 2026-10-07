@@ -1,0 +1,16 @@
+{
+  "result": "ok",
+  "data": {
+    "version": "16.0",
+    "version_latest": "16.1",
+    "version_pending": null,
+    "update_available": true,
+    "board": "generic-x86-64",
+    "boot": "A",
+    "data_disk": "EXAMPLE-DISK-0",
+    "boot_slots": {
+      "A": {"state": "booted", "status": "good", "version": "16.0"},
+      "B": {"state": "inactive", "status": "good", "version": "15.2"}
+    }
+  }
+}

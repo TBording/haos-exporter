@@ -1,0 +1,19 @@
+{
+  "result": "ok",
+  "data": {
+    "unsupported": ["os_agent"],
+    "unhealthy": ["privileged"],
+    "suggestions": [
+      {"type": "create_full_backup", "context": "system", "reference": null, "reference_extra": null, "uuid": "00000000000000000000000000000001", "auto": false}
+    ],
+    "issues": [
+      {"type": "no_current_backup", "context": "system", "reference": null, "reference_extra": null, "uuid": "00000000000000000000000000000002"},
+      {"type": "corrupt_docker", "context": "addon", "reference": "core_example_broker", "reference_extra": null, "uuid": "00000000000000000000000000000003"},
+      {"type": "corrupt_docker", "context": "addon", "reference": "0123abcd_editor", "reference_extra": null, "uuid": "00000000000000000000000000000004"}
+    ],
+    "checks": [
+      {"enabled": true, "slug": "backups"},
+      {"enabled": true, "slug": "free_space"}
+    ]
+  }
+}

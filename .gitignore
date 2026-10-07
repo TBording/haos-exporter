@@ -1,0 +1,24 @@
+# Go build and test output (anchored: cmd/haos-exporter/ is source).
+/haos_exporter/haos-exporter
+/dist/
+*.test
+*.out
+*.prof
+coverage.*
+go.work
+go.work.sum
+
+# Python bytecode (ci/ scripts)
+__pycache__/
+
+# Image and scan artefacts from local runs
+*.spdx.json
+*.sarif
+*-oci.tar
+
+# Editors and OS
+.idea/
+.vscode/
+*.swp
+*~
+.DS_Store

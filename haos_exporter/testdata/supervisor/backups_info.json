@@ -1,0 +1,50 @@
+{
+  "result": "ok",
+  "data": {
+    "backups": [
+      {
+        "slug": "0a1b2c3d",
+        "name": "Example partial one",
+        "date": "2026-01-10T03:00:00.250000+00:00",
+        "type": "partial",
+        "size": 1.5,
+        "size_bytes": 1572864,
+        "location": null,
+        "locations": [null],
+        "protected": true,
+        "location_attributes": {".local": {"protected": true, "size_bytes": 1572864}},
+        "compressed": true,
+        "content": {"homeassistant": true, "folders": ["ssl"], "addons": ["core_example_broker"]}
+      },
+      {
+        "slug": "1b2c3d4e",
+        "name": "Example partial two",
+        "date": "2026-01-11T03:00:00+00:00",
+        "type": "partial",
+        "size": 2.0,
+        "size_bytes": 2097152,
+        "location": null,
+        "locations": [null],
+        "protected": false,
+        "location_attributes": {".local": {"protected": false, "size_bytes": 2097152}},
+        "compressed": true,
+        "content": {"homeassistant": false, "folders": [], "addons": ["0123abcd_editor"]}
+      },
+      {
+        "slug": "2c3d4e5f",
+        "name": "Example of an unknown type",
+        "date": "2025-12-01T12:30:00.000001+00:00",
+        "type": "legacy",
+        "size": 0.0,
+        "size_bytes": 1024,
+        "location": null,
+        "locations": [null],
+        "protected": false,
+        "location_attributes": {".local": {"protected": false, "size_bytes": 1024}},
+        "compressed": false,
+        "content": {"homeassistant": false, "folders": ["share"], "addons": []}
+      }
+    ],
+    "days_until_stale": 30
+  }
+}

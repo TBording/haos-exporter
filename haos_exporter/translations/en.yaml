@@ -1,0 +1,31 @@
+configuration:
+  basic_auth_username:
+    name: Basic auth username
+    description: >-
+      Username Prometheus sends with basic auth. Default: prometheus.
+  basic_auth_password_hash:
+    name: Basic auth password hash (bcrypt)
+    description: >-
+      Required. A bcrypt hash of the scrape password, never the password
+      itself. The app does not start until this is set. See the Documentation
+      tab for how to generate one without putting the password on a command
+      line.
+  tls_mode:
+    name: TLS mode
+    description: >-
+      self_signed (default) serves HTTPS with a certificate generated in memory
+      at every start; it protects the password on the network but does not
+      prove the server's identity. "provided" serves server.crt and server.key
+      from this app's config folder, so Prometheus can pin the certificate;
+      see the Documentation tab. "off" serves plain HTTP and sends the
+      password in clear text.
+  tls_client_auth:
+    name: Require client certificates
+    description: >-
+      Refuse any client that does not present a certificate trusted by
+      client-ca.crt in this app's config folder. Needs TLS. Default: off.
+  log_level:
+    name: Log level
+    description: One of debug, info, warn or error. Default is info.
+network:
+  9100/tcp: Prometheus metrics (HTTPS and basic auth by default)

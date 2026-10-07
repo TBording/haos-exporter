@@ -1,0 +1,8 @@
+# PyYAML for ci/check_manifest.py. CI installs it with
+#   pip install --require-hashes --only-binary=:all: -r ci/requirements.txt
+# The hash is PyPI's sha256 of the one wheel the ubuntu-24.04 runner's system
+# Python 3.12 selects (cp312, manylinux x86_64). A runner on another Python or
+# architecture fails the install instead of fetching an unverified file.
+# Update the version and the hash together.
+pyyaml==6.0.2 \
+    --hash=sha256:80bab7bfc629882493af4aa31a4cfa43a4c57c83813253626916b8c7ada83476

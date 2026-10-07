@@ -1,0 +1,20 @@
+{
+  "result": "ok",
+  "data": {
+    "version": "2026.1.0",
+    "version_latest": "2026.1.0",
+    "update_available": false,
+    "machine": "generic-x86-64",
+    "ip_address": "172.30.32.1",
+    "arch": "amd64",
+    "image": "ghcr.io/home-assistant/generic-x86-64-homeassistant",
+    "boot": true,
+    "port": 8123,
+    "ssl": false,
+    "watchdog": true,
+    "audio_input": null,
+    "audio_output": null,
+    "backups_exclude_database": false,
+    "duplicate_log_file": false
+  }
+}

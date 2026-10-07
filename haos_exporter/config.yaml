@@ -1,0 +1,69 @@
+# HAOS Exporter app manifest. Validated against Supervisor 2026.09.2
+# (supervisor/apps/validate.py). Unknown keys are silently dropped there, so
+# ci/check_manifest.py asserts the security-relevant keys below.
+#
+# Privilege decisions, one line each (the root README has the full table):
+# - hassio_api + hassio_role default: every endpoint used is a `/<x>/info` GET;
+#   higher roles add write routes (manager can add a store repository and
+#   install from it), so a network-facing process must not hold them.
+# - No homeassistant_api / auth_api: Core liveness is an unauthenticated
+#   GET /manifest.json, and the exporter checks its own bcrypt credential.
+# - No host_network: the port is published instead; host NIC counters are the
+#   only thing it would add, and the hypervisor already exports those.
+# - No host_pid: /proc/{stat,meminfo,loadavg} are kernel-global and already
+#   show the host inside the container.
+# - No docker_api / full_access / privileged / devices / uart / usb: nothing
+#   needs them; /data is always mounted and statfs("/data") suffices.
+# - map app_config read-only: the app's own config folder at /config, for
+#   the operator-provided server.crt, server.key and client-ca.crt
+#   (tls_mode: provided, tls_client_auth). No other map type.
+# - backup_exclude *.key: the server key stays out of Home Assistant
+#   backups; after a restore the operator generates a new one.
+# - apparmor true + apparmor.txt: custom enforce-mode profile. Bump `version`
+#   whenever apparmor.txt changes; the Supervisor loads it on install/update only.
+# - init false: the Go binary is PID 1 and handles SIGTERM itself.
+# - tmpfs true: /tmp is the only writable path (the web-config file lives there).
+# - No image key: the Supervisor builds the Dockerfile locally (private phase).
+name: HAOS Exporter
+version: "0.4.0"
+slug: haos_exporter
+description: >-
+  Prometheus exporter for Home Assistant OS: host, Supervisor, update, app and
+  backup health from one unprivileged container.
+url: https://github.com/TBording/haos-exporter
+arch:
+  - amd64
+  - aarch64
+stage: experimental
+startup: application
+boot: auto
+init: false
+hassio_api: true
+hassio_role: default
+apparmor: true
+tmpfs: true
+map:
+  - type: app_config
+    read_only: true
+backup_exclude:
+  - "*.key"
+ports:
+  "9100/tcp": 9100
+ports_description:
+  "9100/tcp": "Prometheus metrics (HTTPS and basic auth by default)"
+watchdog: "tcp://[HOST]:[PORT:9100]"
+options:
+  basic_auth_username: prometheus
+  # null makes the option mandatory: the Supervisor refuses to start the app
+  # while it is unset. It accepts an empty string, which the exporter refuses
+  # at start (exit 1), so neither path serves unauthenticated.
+  basic_auth_password_hash: null
+  tls_mode: self_signed
+  tls_client_auth: false
+  log_level: info
+schema:
+  basic_auth_username: str
+  basic_auth_password_hash: password
+  tls_mode: "list(self_signed|provided|off)"
+  tls_client_auth: bool
+  log_level: "list(debug|info|warn|error)"

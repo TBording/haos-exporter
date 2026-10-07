@@ -1,0 +1,202 @@
+# CI for haos-exporter.
+#
+# - Triggers: push to main and pull_request only. Never pull_request_target:
+#   fork PRs must not run with this repository's token or secrets.
+# - No secrets are used anywhere in this workflow.
+# - Every action is pinned to a full commit SHA with its release tag in a
+#   comment (Dependabot updates both). Tools fetched at runtime are pinned by
+#   version and checked before they run: gitleaks against the sha256 below,
+#   govulncheck by Go's checksum database, grype and syft by each tool's
+#   install.sh at the release tag, which verifies the archive against that
+#   release's checksums file. Dependabot cannot see these versions;
+#   .github/dependabot.yml lists what to bump by hand.
+# - The token is read-only for every job; no job asks for more.
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  go:
+    name: Go (gofmt, vet, race tests, govulncheck)
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: haos_exporter
+    env:
+      # Fail rather than silently download a different Go toolchain.
+      GOTOOLCHAIN: local
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: "1.27.1"
+          cache-dependency-path: haos_exporter/go.sum
+
+      - name: gofmt
+        run: test -z "$(gofmt -l .)" || { gofmt -l .; exit 1; }
+
+      - name: go vet
+        run: go vet ./...
+
+      - name: go test -race
+        run: go test -race -count=1 ./...
+
+      - name: govulncheck
+        run: go run golang.org/x/vuln/cmd/govulncheck@v1.8.0 ./...
+
+  gitleaks:
+    name: gitleaks (full history)
+    runs-on: ubuntu-24.04
+    # The gitleaks binary rather than gitleaks/gitleaks-action: the action
+    # needs secrets.GITHUB_TOKEN on pull_request (to comment on PRs) and is
+    # under a non-OSI licence since v2; the binary is MIT, needs no token and
+    # is verified against a pinned sha256.
+    env:
+      GITLEAKS_VERSION: "8.30.1"
+      # sha256 of gitleaks_8.30.1_linux_x64.tar.gz, as listed in the release's
+      # gitleaks_8.30.1_checksums.txt. Update both lines together.
+      GITLEAKS_SHA256: 551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Install gitleaks (pinned, sha256-verified)
+        run: |
+          tarball="$RUNNER_TEMP/gitleaks.tar.gz"
+          curl -sSfL -o "$tarball" \
+            "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+          echo "${GITLEAKS_SHA256}  ${tarball}" | sha256sum -c -
+          tar -xzf "$tarball" -C "$RUNNER_TEMP" gitleaks
+
+      - name: Scan every commit on every fetched ref
+        run: '"$RUNNER_TEMP/gitleaks" git --log-opts="--all" --redact --verbose --no-banner .'
+
+  image:
+    name: Image (build, grype, SBOM, attestations)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Build metadata
+        id: meta
+        run: |
+          version="$(sed -n 's/^version: "\(.*\)"$/\1/p' haos_exporter/config.yaml | head -n 1)"
+          test -n "$version"
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+          echo "date=$(date -u +%Y%m%d-%H:%M:%S)" >> "$GITHUB_OUTPUT"
+
+      # BuildKit pinned by digest; the action's default is the moving
+      # moby/buildkit:buildx-stable-1, which was v0.32.2 (this digest) when
+      # pinned. Resolve a new one with `docker buildx imagetools inspect`.
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+        with:
+          driver-opts: image=moby/buildkit:v0.32.2@sha256:28a898719c18a33f4e8000685287fa36fd0dd9560c6440227d3a732d79bb41d8
+
+      # Build 1: amd64, loaded into the runner's Docker for grype and syft.
+      # Attestations are off here because the classic image store that `load`
+      # writes to cannot hold an image index with attestation manifests.
+      - name: Build amd64 image (loaded, for scanning)
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: haos_exporter
+          platforms: linux/amd64
+          push: false
+          load: true
+          provenance: false
+          sbom: false
+          tags: haos-exporter:ci
+          build-args: |
+            BUILD_ARCH=amd64
+            BUILD_VERSION=${{ steps.meta.outputs.version }}
+            BUILD_REVISION=${{ github.sha }}
+            BUILD_BRANCH=${{ github.ref_name }}
+            BUILD_DATE=${{ steps.meta.outputs.date }}
+
+      # Build 2: arm64 with BuildKit's native SLSA provenance (mode=max) and
+      # SPDX SBOM attestations, exported as an OCI layout. Nothing is pushed
+      # while the repository is private; this proves the arm64 build and the
+      # attestation path. The release workflow at the public flip pushes them.
+      - name: Build arm64 image with provenance and SBOM attestations
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: haos_exporter
+          platforms: linux/arm64
+          push: false
+          provenance: mode=max
+          # The SBOM generator pinned by digest; BuildKit's default is the
+          # moving docker/buildkit-syft-scanner:stable-1, which was 1.12.0
+          # (this digest) when pinned.
+          sbom: generator=docker/buildkit-syft-scanner:1.12.0@sha256:ae4f3b554449e7e25548e7d8ccc029d17357348e30c6e3df01b92bc93654d6a9
+          outputs: type=oci,dest=${{ runner.temp }}/haos-exporter-arm64-oci.tar
+          build-args: |
+            BUILD_ARCH=aarch64
+            BUILD_VERSION=${{ steps.meta.outputs.version }}
+            BUILD_REVISION=${{ github.sha }}
+            BUILD_BRANCH=${{ github.ref_name }}
+            BUILD_DATE=${{ steps.meta.outputs.date }}
+
+      - name: Check the attestations are in the OCI layout
+        run: |
+          mkdir "$RUNNER_TEMP/oci"
+          tar -xf "$RUNNER_TEMP/haos-exporter-arm64-oci.tar" -C "$RUNNER_TEMP/oci"
+          python3 - "$RUNNER_TEMP/oci" <<'EOF'
+          import json, os, sys
+          root = sys.argv[1]
+          blob = lambda d: json.load(open(os.path.join(root, "blobs", *d.split(":"))))
+          found = set()
+          for top in json.load(open(os.path.join(root, "index.json")))["manifests"]:
+              for m in blob(top["digest"]).get("manifests", []):
+                  if m.get("annotations", {}).get("vnd.docker.reference.type") == "attestation-manifest":
+                      for layer in blob(m["digest"])["layers"]:
+                          found.add(layer.get("annotations", {}).get("in-toto.io/predicate-type"))
+          print("predicates:", sorted(found))
+          want = {"https://slsa.dev/provenance/v1", "https://spdx.dev/Document"}
+          sys.exit(0 if want <= found else f"missing attestations: {sorted(want - found)}")
+          EOF
+
+      - name: Scan image with grype
+        uses: anchore/scan-action@27805bf3b4e84b4a5c980df22ed233c00390a439 # v7.4.2
+        with:
+          image: haos-exporter:ci
+          fail-build: true
+          severity-cutoff: high
+          output-format: table
+          grype-version: v0.120.0
+
+      - name: SBOM (SPDX JSON) as a workflow artifact
+        uses: anchore/sbom-action@3ad7283483fc7af8ff2b4ea19663c2d5ca935e26 # v0.24.2
+        with:
+          image: haos-exporter:ci
+          format: spdx-json
+          artifact-name: haos-exporter-amd64.spdx.json
+          syft-version: v1.54.0
+          upload-release-assets: false
+
+  manifest:
+    name: Manifest and AppArmor profile
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Check config.yaml and apparmor.txt
+        run: |
+          python3 -m venv "$RUNNER_TEMP/venv"
+          "$RUNNER_TEMP/venv/bin/pip" install --quiet --require-hashes --only-binary=:all: -r ci/requirements.txt
+          "$RUNNER_TEMP/venv/bin/python" ci/check_manifest.py haos_exporter
+          "$RUNNER_TEMP/venv/bin/python" -m unittest discover -s ci -p 'test_*.py' -v

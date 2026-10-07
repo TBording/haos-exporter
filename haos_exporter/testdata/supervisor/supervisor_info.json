@@ -1,0 +1,76 @@
+{
+  "result": "ok",
+  "data": {
+    "version": "2026.01.0",
+    "version_latest": "2026.01.1",
+    "update_available": true,
+    "channel": "stable",
+    "arch": "amd64",
+    "supported": true,
+    "healthy": false,
+    "ip_address": "172.30.32.2",
+    "timezone": "UTC",
+    "logging": "info",
+    "debug": false,
+    "debug_block": false,
+    "diagnostics": false,
+    "auto_update": true,
+    "detect_blocking_io": false,
+    "country": "US",
+    "feature_flags": {
+      "supervisor_v2_api": false,
+      "supervisor_websocket_v2_api": true
+    },
+    "wait_boot": 5,
+    "addons": [
+      {
+        "name": "Example Broker",
+        "slug": "core_example_broker",
+        "version": "7.0.0",
+        "version_latest": "7.1.0",
+        "update_available": true,
+        "state": "started",
+        "repository": "core",
+        "icon": true,
+        "options": {"password": "CANARY-OPTIONS"},
+        "ingress_entry": "/api/hassio_ingress/CANARY-INGRESS-ENTRY",
+        "ingress_url": "/api/hassio_ingress/CANARY-INGRESS-URL/"
+      },
+      {
+        "name": "Example Editor",
+        "slug": "0123abcd_editor",
+        "version": "5.0.0",
+        "version_latest": "5.0.0",
+        "update_available": false,
+        "state": "stopped",
+        "repository": "0123abcd",
+        "icon": false
+      },
+      {
+        "name": "Bell\u0007Line\nBreak",
+        "slug": "local_sanitise",
+        "version": "0.1.0",
+        "version_latest": "0.1.0",
+        "update_available": false,
+        "state": "rebuilding",
+        "repository": "local",
+        "icon": false
+      },
+      {
+        "name": "Invalid Slug",
+        "slug": "bad slug!",
+        "version": "1.0.0",
+        "version_latest": "1.1.0",
+        "update_available": true,
+        "state": "started",
+        "repository": "local",
+        "icon": false
+      }
+    ],
+    "addons_repositories": [
+      {"name": "Local apps", "slug": "local"},
+      {"name": "Official apps", "slug": "core"},
+      {"name": "Example Repository", "slug": "0123abcd"}
+    ]
+  }
+}

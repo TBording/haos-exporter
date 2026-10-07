@@ -1,0 +1,121 @@
+# HELP haos_app_info Installed app.
+# TYPE haos_app_info gauge
+haos_app_info{name="BellLineBreak",repository="local",slug="local_sanitise",version="0.1.0",version_latest="0.1.0"} 1
+haos_app_info{name="Example Broker",repository="core",slug="core_example_broker",version="7.0.0",version_latest="7.1.0"} 1
+haos_app_info{name="Example Editor",repository="0123abcd",slug="0123abcd_editor",version="5.0.0",version_latest="5.0.0"} 1
+# HELP haos_app_state App state as a StateSet: 1 for the current state, 0 for the others.
+# TYPE haos_app_state gauge
+haos_app_state{slug="0123abcd_editor",state="error"} 0
+haos_app_state{slug="0123abcd_editor",state="started"} 0
+haos_app_state{slug="0123abcd_editor",state="startup"} 0
+haos_app_state{slug="0123abcd_editor",state="stopped"} 1
+haos_app_state{slug="0123abcd_editor",state="unknown"} 0
+haos_app_state{slug="core_example_broker",state="error"} 0
+haos_app_state{slug="core_example_broker",state="started"} 1
+haos_app_state{slug="core_example_broker",state="startup"} 0
+haos_app_state{slug="core_example_broker",state="stopped"} 0
+haos_app_state{slug="core_example_broker",state="unknown"} 0
+haos_app_state{slug="local_sanitise",state="error"} 0
+haos_app_state{slug="local_sanitise",state="started"} 0
+haos_app_state{slug="local_sanitise",state="startup"} 0
+haos_app_state{slug="local_sanitise",state="stopped"} 0
+haos_app_state{slug="local_sanitise",state="unknown"} 1
+# HELP haos_app_update_available 1 if an update is available for the app.
+# TYPE haos_app_update_available gauge
+haos_app_update_available{slug="0123abcd_editor"} 0
+haos_app_update_available{slug="core_example_broker"} 1
+haos_app_update_available{slug="local_sanitise"} 0
+# HELP haos_backup_latest_timestamp_seconds Date of the newest backup by type, in Unix seconds. Absent when there is none.
+# TYPE haos_backup_latest_timestamp_seconds gauge
+haos_backup_latest_timestamp_seconds{type="other"} 1.764592200000001e+09
+haos_backup_latest_timestamp_seconds{type="partial"} 1.7681004e+09
+# HELP haos_backups Number of backups by type.
+# TYPE haos_backups gauge
+haos_backups{type="full"} 0
+haos_backups{type="other"} 1
+haos_backups{type="partial"} 2
+# HELP haos_backups_size_bytes Total size of backups by type.
+# TYPE haos_backups_size_bytes gauge
+haos_backups_size_bytes{type="full"} 0
+haos_backups_size_bytes{type="other"} 1024
+haos_backups_size_bytes{type="partial"} 3.670016e+06
+# HELP haos_component_update_available 1 if the Supervisor reports an update for the component.
+# TYPE haos_component_update_available gauge
+haos_component_update_available{component="core"} 0
+haos_component_update_available{component="os"} 1
+haos_component_update_available{component="supervisor"} 1
+# HELP haos_component_version_info Installed and latest version of a component.
+# TYPE haos_component_version_info gauge
+haos_component_version_info{component="core",version="2026.1.0",version_latest="2026.1.0"} 1
+haos_component_version_info{component="os",version="16.0",version_latest="16.1"} 1
+haos_component_version_info{component="supervisor",version="2026.01.0",version_latest="2026.01.1"} 1
+# HELP haos_core_up 1 if Home Assistant Core answered GET /manifest.json with any HTTP status, 0 on a connection error or timeout.
+# TYPE haos_core_up gauge
+haos_core_up 1
+# HELP haos_exporter_collector_last_success_timestamp_seconds Time of the Supervisor-backed collector's last successful poll, in Unix seconds; 0 if it has not succeeded since the exporter started.
+# TYPE haos_exporter_collector_last_success_timestamp_seconds gauge
+haos_exporter_collector_last_success_timestamp_seconds{collector="backups_info"} 1.79e+09
+haos_exporter_collector_last_success_timestamp_seconds{collector="core_info"} 1.79e+09
+haos_exporter_collector_last_success_timestamp_seconds{collector="host_info"} 1.79e+09
+haos_exporter_collector_last_success_timestamp_seconds{collector="os_info"} 1.79e+09
+haos_exporter_collector_last_success_timestamp_seconds{collector="resolution_info"} 1.79e+09
+haos_exporter_collector_last_success_timestamp_seconds{collector="supervisor_info"} 1.79e+09
+# HELP haos_exporter_collector_poll_interval_seconds How often the Supervisor-backed collector is polled.
+# TYPE haos_exporter_collector_poll_interval_seconds gauge
+haos_exporter_collector_poll_interval_seconds{collector="backups_info"} 300
+haos_exporter_collector_poll_interval_seconds{collector="core_info"} 300
+haos_exporter_collector_poll_interval_seconds{collector="host_info"} 300
+haos_exporter_collector_poll_interval_seconds{collector="os_info"} 300
+haos_exporter_collector_poll_interval_seconds{collector="resolution_info"} 60
+haos_exporter_collector_poll_interval_seconds{collector="supervisor_info"} 60
+# HELP haos_exporter_collector_success 1 if the collector's last run (for a Supervisor-backed collector, its last poll) succeeded; 0 if it failed, in which case none of its own series are emitted.
+# TYPE haos_exporter_collector_success gauge
+haos_exporter_collector_success{collector="backups_info"} 1
+haos_exporter_collector_success{collector="core_info"} 1
+haos_exporter_collector_success{collector="core_probe"} 1
+haos_exporter_collector_success{collector="host_info"} 1
+haos_exporter_collector_success{collector="os_info"} 1
+haos_exporter_collector_success{collector="resolution_info"} 1
+haos_exporter_collector_success{collector="supervisor_info"} 1
+# HELP haos_exporter_series_dropped_total Apps, feature flags, boot slots, resolution reasons, resolution (type, context) pairs or disk devices left out of the metrics, by cap or failed validation.
+# TYPE haos_exporter_series_dropped_total counter
+haos_exporter_series_dropped_total{collector="os_info",reason="cap"} 0
+haos_exporter_series_dropped_total{collector="resolution_info",reason="cap"} 0
+haos_exporter_series_dropped_total{collector="supervisor_info",reason="cap"} 0
+haos_exporter_series_dropped_total{collector="supervisor_info",reason="invalid_slug"} 1
+# HELP haos_os_boot_slot_info HAOS A/B boot slot state.
+# TYPE haos_os_boot_slot_info gauge
+haos_os_boot_slot_info{slot="A",state="booted",status="good",version="16.0"} 1
+haos_os_boot_slot_info{slot="B",state="inactive",status="good",version="15.2"} 1
+# HELP haos_resolution_issues Resolution center issues per (type, context).
+# TYPE haos_resolution_issues gauge
+haos_resolution_issues{context="addon",type="corrupt_docker"} 2
+haos_resolution_issues{context="system",type="no_current_backup"} 1
+# HELP haos_resolution_suggestions Resolution center suggestions per (type, context).
+# TYPE haos_resolution_suggestions gauge
+haos_resolution_suggestions{context="system",type="create_full_backup"} 1
+# HELP haos_resolution_unhealthy Reason the Supervisor marks the system unhealthy.
+# TYPE haos_resolution_unhealthy gauge
+haos_resolution_unhealthy{reason="privileged"} 1
+# HELP haos_resolution_unsupported Reason the Supervisor marks the system unsupported.
+# TYPE haos_resolution_unsupported gauge
+haos_resolution_unsupported{reason="os_agent"} 1
+# HELP haos_supervisor_feature_flag Supervisor feature flag state.
+# TYPE haos_supervisor_feature_flag gauge
+haos_supervisor_feature_flag{flag="supervisor_v2_api"} 0
+haos_supervisor_feature_flag{flag="supervisor_websocket_v2_api"} 1
+# HELP haos_supervisor_healthy 1 if the Supervisor reports itself healthy.
+# TYPE haos_supervisor_healthy gauge
+haos_supervisor_healthy 0
+# HELP haos_supervisor_supported 1 if the Supervisor reports the installation as supported.
+# TYPE haos_supervisor_supported gauge
+haos_supervisor_supported 1
+# HELP haos_updates_pending Pending updates by type; for type app, the number of apps with an update.
+# TYPE haos_updates_pending gauge
+haos_updates_pending{type="app"} 2
+haos_updates_pending{type="core"} 0
+haos_updates_pending{type="os"} 1
+haos_updates_pending{type="supervisor"} 1
+# HELP node_uname_info Host identity. nodename and release come from the Supervisor's /host/info, not from the container.
+# TYPE node_uname_info gauge
+node_uname_info{machine="x86_64",nodename="homeassistant",release="6.12.40-haos",sysname="Linux"} 1
