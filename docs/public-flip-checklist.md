@@ -230,6 +230,8 @@ when it is public.
       each ended with no open issue.
 
 Sections 2–5 were carried out on 2026-10-07 by Claude Code under the
-owner's authorization. The signature below is the owner's.
+owner's authorization. The signature below is the owner's, written into
+this file by Claude Code on the owner's instruction ("Sign the public-flip
+checklist").
 
-Signed off by: ____________________  Date: ____________
+Signed off by: TBording (repository owner)  Date: 2026-10-07
