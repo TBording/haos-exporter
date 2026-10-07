@@ -394,7 +394,7 @@ against the released image:
 ### Log lines that are expected
 
 At every start, two self-checks make requests that must fail. Their log
-lines look like errors, but they prove the confinement works:
+lines look like errors, but each is a denial the self-check expects:
 
 - **The host log** shows one AppArmor `DENIED` line: the write attempt under
   `/dev/shm`, which the profile must block.
