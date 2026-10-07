@@ -234,7 +234,7 @@ func (e *Exporter) pollAll(ctx context.Context) {
 func (e *Exporter) poll(ctx context.Context, p *polledPart) {
 	start := e.now()
 	b := newBatch()
-	err := safeUpdate(p, &runState{ctx: ctx, api: e.api, core: &e.core}, b)
+	err := safeUpdate(p, &runState{ctx: ctx, api: e.api, core: &e.core, logger: e.logger}, b)
 	if err == nil {
 		err = b.err
 	}
@@ -262,7 +262,7 @@ func (e *Exporter) poll(ctx context.Context, p *polledPart) {
 // concurrently and replays each polled part's latest result. It makes no
 // Supervisor request: the live parts get no Supervisor client.
 func (e *Exporter) Collect(ch chan<- prometheus.Metric) {
-	s := &runState{ctx: context.Background(), core: &e.core}
+	s := &runState{ctx: context.Background(), core: &e.core, logger: e.logger}
 	var wg sync.WaitGroup
 	for _, p := range e.live {
 		wg.Go(func() { e.run(p, s, ch) })
@@ -352,9 +352,10 @@ func safeUpdate(p part, s *runState, b *batch) (err error) {
 // scrape cannot reach the Supervisor. core holds the last /core/info that
 // core_info read, which the per-scrape Core probe dials.
 type runState struct {
-	ctx  context.Context
-	api  Getter
-	core *atomic.Pointer[supervisor.CoreInfo]
+	ctx    context.Context
+	api    Getter
+	core   *atomic.Pointer[supervisor.CoreInfo]
+	logger *slog.Logger
 }
 
 // batch buffers a part's metrics so that nothing is emitted unless the whole

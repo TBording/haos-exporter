@@ -36,7 +36,10 @@ sources: [DESIGN.md](https://github.com/TBording/haos-exporter/blob/main/DESIGN.
 - **Versions and updates**: `haos_component_version_info`,
   `haos_component_update_available` (Core, Supervisor, OS),
   `haos_updates_pending`, `haos_os_boot_slot_info`.
-- **Apps**: `haos_app_info`, `haos_app_state`, `haos_app_update_available`.
+- **Apps**: `haos_app_info`, `haos_app_state`, `haos_app_update_available`,
+  and `haos_supervisor_app_list_present`. It is 0 when the Supervisor's
+  `/supervisor/info` no longer carries its app list; the app series and the
+  app update count are then left out, and the app log shows an ERROR.
 - **Core liveness**: `haos_core_up`, from an unauthenticated
   `GET /manifest.json` against Core. 1 means Core answered HTTP with any
   status, an error such as 500 included; 0 means no answer (connection error
@@ -294,10 +297,8 @@ Two more watch for the Supervisor's deprecated app list going away (see
 
 - `haos_supervisor_feature_flag{flag="supervisor_v2_api"} == 1`: the v2
   API is on, an early sign of the migration.
-- `(count(haos_app_info) or vector(0)) == 0 and on()
-  haos_exporter_collector_success{collector="supervisor_info"} == 1`: the
-  app list is empty although the poll succeeded. That cannot happen while
-  the list exists, because the exporter itself is always in it.
+- `haos_supervisor_app_list_present == 0`: the Supervisor no longer sends
+  the app list, so the app metrics are gone.
 
 ## Network
 

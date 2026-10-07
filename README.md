@@ -184,8 +184,9 @@ roles. CI pins `hassio_role: default` in the manifest.
 - **The Supervisor may change.** Findings are measured against Supervisor
   2026.09.2 and 2026.09.3. The v1 `/supervisor/info` app list is deprecated;
   the v2 API moves it behind `manager`. When a release drops it, the app
-  metrics stop without an error. The exporter will not take `manager` to keep
-  them; DESIGN.md has the plan and the alerts to set.
+  metrics stop, and the exporter reports that: `haos_supervisor_app_list_present`
+  drops to 0 and the app log shows an ERROR. The exporter will not take
+  `manager` to keep them; DESIGN.md has the plan and the alerts to set.
 
 ## Install
 

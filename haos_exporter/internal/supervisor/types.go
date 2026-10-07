@@ -48,8 +48,10 @@ type SupervisorInfo struct {
 	Supported       bool            `json:"supported"`
 	FeatureFlags    map[string]bool `json:"feature_flags"`
 	// Apps is the v1 "addons" list, marked deprecated by the Supervisor. It
-	// is the only app list the default role can read.
-	Apps []App `json:"addons"`
+	// is the only app list the default role can read. It is nil when the
+	// field is absent or null, which is how its removal will show; an empty
+	// list is a non-nil pointer to an empty slice.
+	Apps *[]App `json:"addons"`
 }
 
 // App is one entry of the /supervisor/info app list.

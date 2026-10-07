@@ -100,6 +100,9 @@ haos_resolution_unhealthy{reason="privileged"} 1
 # HELP haos_resolution_unsupported Reason the Supervisor marks the system unsupported.
 # TYPE haos_resolution_unsupported gauge
 haos_resolution_unsupported{reason="os_agent"} 1
+# HELP haos_supervisor_app_list_present 1 if /supervisor/info carries its app list; 0 when the field is missing, in which case no app series and no updates_pending{type="app"} are reported.
+# TYPE haos_supervisor_app_list_present gauge
+haos_supervisor_app_list_present 1
 # HELP haos_supervisor_feature_flag Supervisor feature flag state.
 # TYPE haos_supervisor_feature_flag gauge
 haos_supervisor_feature_flag{flag="supervisor_v2_api"} 0

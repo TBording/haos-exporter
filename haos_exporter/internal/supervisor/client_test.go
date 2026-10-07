@@ -141,8 +141,8 @@ func TestDecodedStructsNeverHoldSecrets(t *testing.T) {
 	if err := c.Get(context.Background(), PathSupervisorInfo, &info); err != nil {
 		t.Fatal(err)
 	}
-	if len(info.Apps) != 4 {
-		t.Fatalf("apps = %d", len(info.Apps))
+	if info.Apps == nil || len(*info.Apps) != 4 {
+		t.Fatalf("apps = %v", info.Apps)
 	}
 	b, _ := json.Marshal(info)
 	if strings.Contains(string(b), "CANARY") {

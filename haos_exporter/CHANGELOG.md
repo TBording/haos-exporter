@@ -7,6 +7,20 @@ All notable changes to this app are recorded here. The format follows
 Bump `version` in `config.yaml` whenever `apparmor.txt` changes: the
 Supervisor reloads the AppArmor profile only on install or update.
 
+## [Unreleased]
+
+### Added
+
+- `haos_supervisor_app_list_present`: 1 while the Supervisor's
+  `/supervisor/info` carries its deprecated app list, 0 when it does not.
+
+### Changed
+
+- When the app list is missing (absent or `null`), the exporter no longer
+  reports an installation with no apps and nothing pending: the app series
+  and `haos_updates_pending{type="app"}` are left out, and each poll logs an
+  ERROR. The other Supervisor series are unaffected.
+
 ## [0.4.1] - 2026-10-07
 
 ### Changed

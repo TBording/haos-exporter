@@ -728,3 +728,61 @@ func TestDiskLifeTime(t *testing.T) {
 		}
 	}
 }
+
+// TestAppListMissing: when /supervisor/info stops carrying the deprecated
+// "addons" list, the exporter must say so rather than report an installation
+// with no apps and nothing pending. The rest of the collector keeps working.
+func TestAppListMissing(t *testing.T) {
+	type tcase struct {
+		name        string
+		edit        func(data map[string]any)
+		wantPresent float64
+		wantApps    int
+		wantPending bool // whether haos_updates_pending{type="app"} is emitted
+		wantError   bool // whether an ERROR is logged
+	}
+	cases := []tcase{
+		{"absent", func(d map[string]any) { delete(d, "addons") }, 0, 0, false, true},
+		{"null", func(d map[string]any) { d["addons"] = nil }, 0, 0, false, true},
+		{"empty", func(d map[string]any) { d["addons"] = []any{} }, 1, 0, true, false},
+		// The fixture lists four apps; "bad slug!" is rejected by design.
+		{"present", func(map[string]any) {}, 1, 3, true, false},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			var doc map[string]any
+			if err := json.Unmarshal(readFixture(t, "supervisor_info.json"), &doc); err != nil {
+				t.Fatal(err)
+			}
+			tc.edit(doc["data"].(map[string]any))
+			body, _ := json.Marshal(doc)
+			e := newEnv(t, envOpts{override: map[string]http.HandlerFunc{
+				supervisor.PathSupervisorInfo: func(w http.ResponseWriter, _ *http.Request) { w.Write(body) },
+			}})
+			mfs := collectOnce(t, e.exporter)
+
+			if s := successOf(t, mfs, collectorSupervisorInfo); s != 1 {
+				t.Fatalf("supervisor_info success = %v, want 1: the rest of the collector must keep working", s)
+			}
+			for _, name := range []string{"haos_supervisor_healthy", "haos_supervisor_feature_flag"} {
+				if countSeries(mfs, name) == 0 {
+					t.Fatalf("%s missing: a missing app list must not hide the other Supervisor series", name)
+				}
+			}
+			if got, ok := value(mfs, "haos_supervisor_app_list_present", nil); !ok || got != tc.wantPresent {
+				t.Fatalf("haos_supervisor_app_list_present = %v (emitted %v), want %v", got, ok, tc.wantPresent)
+			}
+			if n := countSeries(mfs, "haos_app_info"); n != tc.wantApps {
+				t.Fatalf("%d haos_app_info series, want %d", n, tc.wantApps)
+			}
+			pending, ok := value(mfs, "haos_updates_pending", map[string]string{"type": "app"})
+			if ok != tc.wantPending {
+				t.Fatalf("haos_updates_pending{type=app} emitted = %v (value %v), want emitted = %v", ok, pending, tc.wantPending)
+			}
+			logged := strings.Contains(e.logs.String(), "level=ERROR") && strings.Contains(e.logs.String(), "app list missing")
+			if logged != tc.wantError {
+				t.Fatalf("ERROR 'app list missing' logged = %v, want %v; logs:\n%s", logged, tc.wantError, e.logs.String())
+			}
+		})
+	}
+}
