@@ -11,8 +11,11 @@
 #   release's checksums file. Dependabot cannot see these versions;
 #   .github/dependabot.yml lists what to bump by hand.
 # - The token is read-only for every job; no job asks for more.
-# - step-security/harden-runner is the first step of every job, in audit
-#   mode: it records each job's network egress without blocking it yet.
+# - step-security/harden-runner is the first step of every job, in block
+#   mode: each job may reach only the endpoints listed for it, the ones it
+#   reached in audit mode over its first 10-15 runs (StepSecurity insights).
+#   GitHub Actions' own endpoints are allowed implicitly. A new tool, base
+#   image or download needs its endpoint added to that job's list.
 
 name: CI
 
@@ -37,7 +40,14 @@ jobs:
     steps:
       - uses: step-security/harden-runner@351661ca32ac09a36dc5ee2d536e3128f2a3c8ed # v2.22.0
         with:
-          egress-policy: audit
+          egress-policy: block
+          allowed-endpoints: >
+            api.github.com:443
+            github.com:443
+            release-assets.githubusercontent.com:443
+            proxy.golang.org:443
+            sum.golang.org:443
+            vuln.go.dev:443
 
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -75,7 +85,10 @@ jobs:
     steps:
       - uses: step-security/harden-runner@351661ca32ac09a36dc5ee2d536e3128f2a3c8ed # v2.22.0
         with:
-          egress-policy: audit
+          egress-policy: block
+          allowed-endpoints: >
+            github.com:443
+            release-assets.githubusercontent.com:443
 
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -99,7 +112,17 @@ jobs:
     steps:
       - uses: step-security/harden-runner@351661ca32ac09a36dc5ee2d536e3128f2a3c8ed # v2.22.0
         with:
-          egress-policy: audit
+          egress-policy: block
+          allowed-endpoints: >
+            github.com:443
+            raw.githubusercontent.com:443
+            release-assets.githubusercontent.com:443
+            registry-1.docker.io:443
+            auth.docker.io:443
+            production.cloudfront.docker.com:443
+            gcr.io:443
+            proxy.golang.org:443
+            grype.anchore.io:443
 
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -206,7 +229,11 @@ jobs:
     steps:
       - uses: step-security/harden-runner@351661ca32ac09a36dc5ee2d536e3128f2a3c8ed # v2.22.0
         with:
-          egress-policy: audit
+          egress-policy: block
+          allowed-endpoints: >
+            github.com:443
+            pypi.org:443
+            files.pythonhosted.org:443
 
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
