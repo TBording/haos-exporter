@@ -47,9 +47,31 @@ jobs:
       id-token: write # OIDC token for cosign keyless signing and the attestations
       attestations: write # store the provenance and SBOM attestations
     steps:
+      # Block mode: the job may reach only these endpoints. They are the ones
+      # the v0.4.0 release reached in audit mode (StepSecurity insights for run
+      # 37581640422), and the build's share of them matches the CI image job
+      # over 15 runs. GitHub Actions' own endpoints (OIDC tokens, cache,
+      # artifacts) are allowed implicitly by the agent. A new tool or base
+      # image needs its endpoint added here.
       - uses: step-security/harden-runner@351661ca32ac09a36dc5ee2d536e3128f2a3c8ed # v2.22.0
         with:
-          egress-policy: audit
+          egress-policy: block
+          allowed-endpoints: >
+            api.github.com:443
+            github.com:443
+            raw.githubusercontent.com:443
+            release-assets.githubusercontent.com:443
+            ghcr.io:443
+            pkg-containers.githubusercontent.com:443
+            registry-1.docker.io:443
+            auth.docker.io:443
+            production.cloudfront.docker.com:443
+            gcr.io:443
+            proxy.golang.org:443
+            fulcio.sigstore.dev:443
+            rekor.sigstore.dev:443
+            timestamp.sigstore.dev:443
+            tuf-repo-cdn.sigstore.dev:443
 
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
