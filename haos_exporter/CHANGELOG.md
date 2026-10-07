@@ -40,7 +40,7 @@ Supervisor reloads the AppArmor profile only on install or update.
 - Each local build no longer leaves the Go build cache and module cache on
   the data partition. The builder stage downloads, builds and deletes both
   caches in one step, so the layer the Supervisor keeps holds only the
-  binary: about 9-15 MB instead of 274 MB (haos-exporter#6). Each update had
+  binary: about 9-15 MB instead of 274 MB. Each update had
   been costing about 293 MiB of `/mnt/data` that nothing reclaimed.
 
 ## [0.3.0] - 2026-09-28
