@@ -17,6 +17,7 @@ backups, from one locked-down Home Assistant app (formerly called an add-on).
 [What you get](#what-you-get) ·
 [Installation](#installation) ·
 [Starter alerts](#starter-alerts) ·
+[Dashboard](#grafana-dashboard) ·
 [Troubleshooting](#troubleshooting) ·
 [Security model](#permissions)
 
@@ -36,7 +37,7 @@ to your home as possible.
   <img src="docs/images/dashboard-light.png" alt="A Grafana dashboard built on the exporter's metrics: status tiles for the exporter, Supervisor, installation, Core, pending updates, data disk, last backup and self-check, then tables of versions, resolution center issues and boot slots, and the installed apps with their state over time.">
 </picture>
 
-<sub>A Grafana dashboard built on these metrics, shown with sample data.</sub>
+<sub>The [Grafana dashboard](#grafana-dashboard) that ships in this repository, shown with sample data.</sub>
 
 > [!NOTE]
 > **Experimental.** Tested on Home Assistant OS 18.3 (an x86-64 VM) with
@@ -323,6 +324,23 @@ Notes:
   [DESIGN.md § Why role `default`](DESIGN.md#why-role-default).
 - **The certificate alert** applies only with `tls_mode: provided` or
   `tls_client_auth`.
+
+## Grafana dashboard
+
+[`dashboards/haos-exporter.json`](dashboards/haos-exporter.json) is the
+dashboard in the screenshot at the top. It has 35 panels:
+
+- status tiles;
+- versions, the resolution center and the boot slots;
+- installed apps and their state over time;
+- updates and backups;
+- host CPU, memory, load, disk and pressure;
+- the exporter's own collectors and self-check.
+
+To add it, in Grafana go to **Dashboards › New › Import**, upload the file,
+and select **Import**. It picks your default Prometheus data source, and the
+exporter's job and instance, by itself. If you scrape more than one, switch
+them with the selectors at the top. It was built and tested on Grafana 13.0.2.
 
 ## Updating
 
@@ -652,6 +670,8 @@ for.
   list.
 - [`haos_exporter/CHANGELOG.md`](haos_exporter/CHANGELOG.md): what changed in
   each version.
+- [`dashboards/haos-exporter.json`](dashboards/haos-exporter.json): the
+  Grafana dashboard.
 - [`SECURITY.md`](SECURITY.md): how to report a vulnerability.
 - [`docs/public-flip-checklist.md`](docs/public-flip-checklist.md): the
   checklist this repository went through before it was made public.
