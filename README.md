@@ -250,6 +250,29 @@ run before every publish with a pattern list that is kept outside the
 repository on purpose: committing it would publish the very strings it looks
 for.
 
+## Releases
+
+A tag `vX.Y.Z` on `main` runs
+[`.github/workflows/release.yml`](.github/workflows/release.yml). It publishes
+`ghcr.io/tbording/haos-exporter:X.Y.Z` for amd64 and aarch64. Published tags are
+never replaced, and there is no `latest`. The image is signed with cosign
+keyless. It carries GitHub's SLSA build provenance attestation, and each
+platform image has an SPDX SBOM attestation. To check a release:
+
+```sh
+# Signature: made by this repository's release workflow, at that tag
+cosign verify ghcr.io/tbording/haos-exporter:X.Y.Z \
+  --certificate-identity "https://github.com/TBording/haos-exporter/.github/workflows/release.yml@refs/tags/vX.Y.Z" \
+  --certificate-oidc-issuer https://token.actions.githubusercontent.com
+
+# Build provenance
+gh attestation verify oci://ghcr.io/tbording/haos-exporter:X.Y.Z --repo TBording/haos-exporter
+
+# SBOM of one platform image (digests from `docker buildx imagetools inspect`)
+gh attestation verify oci://ghcr.io/tbording/haos-exporter@sha256:<digest> \
+  --repo TBording/haos-exporter --predicate-type https://spdx.dev/Document/v2.3
+```
+
 ## License
 
 [Apache-2.0](LICENSE).

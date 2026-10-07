@@ -141,9 +141,9 @@ jobs:
             BUILD_DATE=${{ steps.meta.outputs.date }}
 
       # Build 2: arm64 with BuildKit's native SLSA provenance (mode=max) and
-      # SPDX SBOM attestations, exported as an OCI layout. Nothing is pushed
-      # while the repository is private; this proves the arm64 build and the
-      # attestation path. The release workflow at the public flip pushes them.
+      # SPDX SBOM attestations, exported as an OCI layout. Nothing is pushed;
+      # this proves the arm64 build and BuildKit's attestation path. Releases
+      # (release.yml) carry GitHub's signed attestations instead.
       - name: Build arm64 image with provenance and SBOM attestations
         uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
         with:
