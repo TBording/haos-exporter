@@ -31,6 +31,13 @@ an app stopped? It runs beside Home Assistant rather than inside it, so it
 keeps reporting while Core is down, and it is built to need as little access
 to your home as possible.
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/dashboard-dark.png">
+  <img src="docs/images/dashboard-light.png" alt="A Grafana dashboard built on the exporter's metrics: status tiles for the exporter, Supervisor, installation, Core, pending updates, data disk, last backup and self-check, then tables of versions, resolution center issues and boot slots, and the installed apps with their state over time.">
+</picture>
+
+<sub>A Grafana dashboard built on these metrics, shown with sample data.</sub>
+
 > [!NOTE]
 > **Experimental.** Tested on Home Assistant OS 18.3 (an x86-64 VM) with
 > Supervisor 2026.09.2 and 2026.09.3 and Core 2026.9. The aarch64 image is
