@@ -7,7 +7,19 @@ All notable changes to this app are recorded here. The format follows
 Bump `version` in `config.yaml` whenever `apparmor.txt` changes: the
 Supervisor reloads the AppArmor profile only on install or update.
 
-## [0.4.0] - unreleased
+## [Unreleased]
+
+### Changed
+
+- The manifest names the published image, `ghcr.io/tbording/haos-exporter`,
+  so the app is installed from this repository and the Supervisor pulls the
+  signed image for its platform instead of building it on the device.
+
+## [0.4.0] - 2026-10-07
+
+The first published image: `ghcr.io/tbording/haos-exporter:0.4.0` for amd64
+and aarch64, signed with cosign and carrying SLSA provenance and SPDX SBOM
+attestations.
 
 ### Added
 

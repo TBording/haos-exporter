@@ -139,8 +139,9 @@ serves only a client that presents a certificate you issued. Use both.
 
 The files live in this app's config folder. It is mounted read-only at
 `/config` inside the app, and in the Terminal & SSH app it is
-`/app_configs/<slug>`, where `<slug>` is the app's slug, for example
-`local_haos_exporter` for a local install. Each private key is generated
+`/app_configs/<slug>`, where `<slug>` is the app's slug as `ha apps list`
+shows it. An app installed from a repository gets a prefix derived from the
+repository URL; a local install is `local_haos_exporter`. Each private key is generated
 where it is used: the server key on Home Assistant OS, and the client key
 wherever Prometheus runs.
 

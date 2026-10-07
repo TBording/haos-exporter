@@ -41,7 +41,6 @@ FORBIDDEN_KEYS = (
     "realtime",
     "journald",
     "ingress",
-    "image",
 )
 
 # Every top-level key the manifest may hold. Adding one is a reviewed change.
@@ -67,7 +66,14 @@ ALLOWED_KEYS = frozenset((
     "watchdog",
     "options",
     "schema",
+    "image",
 ))
+
+# The only image the Supervisor may pull: the signed multi-arch index that
+# .github/workflows/release.yml publishes, tagged with the manifest version.
+# No tag here (the Supervisor appends `version`) and no {arch} (one index
+# serves both platforms).
+IMAGE = "ghcr.io/tbording/haos-exporter"
 
 # Same pattern as supervisor/utils/apparmor.py (RE_PROFILE).
 RE_PROFILE = re.compile(r"^profile ([^ ]+).*$")
@@ -96,6 +102,7 @@ def check(app_dir: Path) -> list[str]:
     expect("apparmor", True)
     expect("init", False)
     expect("tmpfs", True)
+    expect("image", IMAGE)
 
     for key in FORBIDDEN_KEYS:
         if key in config:

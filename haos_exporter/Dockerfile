@@ -1,5 +1,6 @@
-# HAOS Exporter image. The build context is this folder: the Supervisor builds
-# it on the device (no `image:` in config.yaml) and passes BUILD_ARCH and
+# HAOS Exporter image. The build context is this folder. Releases are built by
+# .github/workflows/release.yml; a manifest without `image:` makes the
+# Supervisor build it on the device instead, passing BUILD_ARCH and
 # BUILD_VERSION. build.yaml is deprecated and not used.
 #
 # Both base images are pinned by index digest; the tag is kept for readability

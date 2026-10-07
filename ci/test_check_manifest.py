@@ -69,6 +69,22 @@ class CheckManifestTest(unittest.TestCase):
         self.config["ingress"] = True
         self.assertFails("must not be set")
 
+    def test_image_missing(self):
+        del self.config["image"]
+        self.assertFails("want 'ghcr.io/tbording/haos-exporter'")
+
+    def test_image_other_repository(self):
+        self.config["image"] = "ghcr.io/someone-else/haos-exporter"
+        self.assertFails("want 'ghcr.io/tbording/haos-exporter'")
+
+    def test_image_with_tag(self):
+        self.config["image"] = "ghcr.io/tbording/haos-exporter:latest"
+        self.assertFails("want 'ghcr.io/tbording/haos-exporter'")
+
+    def test_image_with_arch_placeholder(self):
+        self.config["image"] = "ghcr.io/tbording/{arch}-haos-exporter"
+        self.assertFails("want 'ghcr.io/tbording/haos-exporter'")
+
 
 if __name__ == "__main__":
     unittest.main()
