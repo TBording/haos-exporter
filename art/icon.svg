@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1e293b"/><stop offset="1" stop-color="#0f172a"/>
+    </linearGradient>
+  </defs>
+  <rect width="128" height="128" rx="28" fill="url(#bg)"/>
+  <!-- gauge arc -->
+  <path d="M24 84 A40 40 0 0 1 104 84" fill="none" stroke="#f8fafc" stroke-width="7" stroke-linecap="round"/>
+  <path d="M77 46 A40 40 0 0 1 104 84" fill="none" stroke="#a78bfa" stroke-width="7" stroke-linecap="round"/>
+  <!-- ticks -->
+  <g stroke="#f8fafc" stroke-width="4" stroke-linecap="round" opacity="0.6">
+    <line x1="64" y1="56" x2="64" y2="62"/>
+    <line x1="40" y1="66" x2="45" y2="70"/>
+    <line x1="88" y1="66" x2="83" y2="70"/>
+  </g>
+  <!-- needle -->
+  <line x1="64" y1="84" x2="88" y2="62" stroke="#a78bfa" stroke-width="7" stroke-linecap="round"/>
+  <circle cx="64" cy="84" r="8" fill="#f8fafc"/>
+  <!-- baseline bars -->
+  <g fill="#f8fafc">
+    <rect x="34" y="98" width="12" height="8" rx="3" opacity="0.55"/>
+    <rect x="52" y="98" width="24" height="8" rx="3"/>
+    <rect x="82" y="98" width="12" height="8" rx="3" opacity="0.55"/>
+  </g>
+</svg>
