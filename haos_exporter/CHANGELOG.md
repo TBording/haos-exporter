@@ -7,6 +7,20 @@ All notable changes to this app are recorded here. The format follows
 Bump `version` in `config.yaml` whenever `apparmor.txt` changes: the
 Supervisor reloads the AppArmor profile only on install or update.
 
+## [0.4.3] - 2026-10-10
+
+### Security
+
+- Built with Go 1.27.2 (was 1.27.1), which fixes standard-library advisories
+  published on 2026-10-10, among them GO-2026-6612 (critical) and GO-2026-6617
+  in the bundled HTTP/2 code. govulncheck showed the exporter reaching that code
+  through its Supervisor client and its server shutdown.
+- `golang.org/x/net` 0.59.0 → 0.60.0 (GO-2026-6617).
+
+### Added
+
+- App icon and logo for the Home Assistant app card and info page.
+
 ## [0.4.2] - 2026-10-07
 
 ### Added
