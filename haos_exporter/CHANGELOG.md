@@ -7,6 +7,19 @@ All notable changes to this app are recorded here. The format follows
 Bump `version` in `config.yaml` whenever `apparmor.txt` changes: the
 Supervisor reloads the AppArmor profile only on install or update.
 
+## [0.4.4] - 2026-10-15
+
+### Changed
+
+- Dependency updates, none of them for a security advisory:
+  `github.com/prometheus/client_golang` 1.24.1 → 1.25.0,
+  `github.com/prometheus/common` 0.72.0 → 0.72.1,
+  `golang.org/x/crypto` 0.57.0 → 0.58.0, `golang.org/x/net` 0.60.0 → 0.61.0,
+  `golang.org/x/sys` 0.48.0 → 0.49.0, `golang.org/x/sync` 0.23.0 → 0.24.0 and
+  `golang.org/x/text` 0.42.0 → 0.43.0. client_golang's breaking changes are in
+  its query API client, which the exporter does not use, and the Go and process
+  collectors expose the same metric names as in 0.4.3.
+
 ## [0.4.3] - 2026-10-10
 
 ### Security
