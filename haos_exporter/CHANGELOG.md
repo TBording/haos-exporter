@@ -7,6 +7,19 @@ All notable changes to this app are recorded here. The format follows
 Bump `version` in `config.yaml` whenever `apparmor.txt` changes: the
 Supervisor reloads the AppArmor profile only on install or update.
 
+## [0.4.5] - 2026-10-24
+
+### Security
+
+- Built with Go 1.27.3 (was 1.27.2), which fixes GO-2026-6809 in
+  `crypto/x509`. govulncheck showed the exporter reaching
+  `x509.Certificate.Verify` through the Core probe.
+
+### Changed
+
+- Runtime base image `gcr.io/distroless/static-debian13:nonroot` moved to its
+  current digest.
+
 ## [0.4.4] - 2026-10-15
 
 ### Changed
