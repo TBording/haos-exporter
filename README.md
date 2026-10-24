@@ -621,7 +621,7 @@ context). No local Go install is needed; every gate runs in the pinned Go
 image. From the repository root:
 
 ```sh
-GO_IMAGE=golang:1.27.2-bookworm@sha256:5cf287a799e6b94384bad13d16b14904c531f51ba65792237e122ce42b392f61
+GO_IMAGE=golang:1.27.3-bookworm@sha256:972b4110ba0f47539a975c31e52c64765e1ff19f2d74469ae4a595c6676e80a5
 run_go() {
   docker run --rm -v "$PWD/haos_exporter:/src" -v haos-exporter-gomod:/go/pkg/mod \
     -w /src "$GO_IMAGE" sh -c "$1"
