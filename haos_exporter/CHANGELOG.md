@@ -7,6 +7,18 @@ All notable changes to this app are recorded here. The format follows
 Bump `version` in `config.yaml` whenever `apparmor.txt` changes: the
 Supervisor reloads the AppArmor profile only on install or update.
 
+## [0.4.6] - 2026-11-01
+
+### Changed
+
+- Dependency update, not for a security advisory:
+  `github.com/prometheus/procfs` 0.22.0 → 0.23.0. Its rewritten mountinfo
+  parser and stricter `/proc/meminfo` parser give the same metric names and
+  the same memory and filesystem series as 0.4.5 on the same `/proc`. A
+  `/proc/meminfo` line without a value now fails the host collector with a
+  parse error instead of a recovered panic; either way the collector reports
+  success 0.
+
 ## [0.4.5] - 2026-10-24
 
 ### Security
