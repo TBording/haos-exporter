@@ -7,6 +7,15 @@ All notable changes to this app are recorded here. The format follows
 Bump `version` in `config.yaml` whenever `apparmor.txt` changes: the
 Supervisor reloads the AppArmor profile only on install or update.
 
+## [0.4.7] - 2026-11-02
+
+### Security
+
+- `golang.org/x/net` 0.61.0 → 0.62.0, which fixes GO-2026-6866 and
+  GO-2026-6860 in `x/net/html`. govulncheck showed neither reachable from the
+  exporter, which does not parse HTML; this removes them from the module
+  graph. No other module changed.
+
 ## [0.4.6] - 2026-11-01
 
 ### Changed
