@@ -7,6 +7,18 @@ All notable changes to this app are recorded here. The format follows
 Bump `version` in `config.yaml` whenever `apparmor.txt` changes: the
 Supervisor reloads the AppArmor profile only on install or update.
 
+## [0.4.8] - 2026-11-07
+
+### Changed
+
+- Dependency update, not for a security advisory:
+  `github.com/prometheus/common` 0.72.1 → 0.73.1. Its changes concern
+  OpenMetrics 2.0 escaping and a new OpenMetrics 1.0 parser. `/metrics` is
+  encoded through it, but only an OpenMetrics 2.0 scrape changes, and
+  Prometheus does not request that format by default.
+- Runtime base image `gcr.io/distroless/static-debian13:nonroot` moved to
+  digest `25ac8f0`.
+
 ## [0.4.7] - 2026-11-02
 
 ### Security
