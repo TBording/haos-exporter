@@ -11,7 +11,7 @@ require (
 	github.com/prometheus/procfs v0.23.0
 	go.yaml.in/yaml/v2 v2.4.4
 	golang.org/x/crypto v0.58.0
-	golang.org/x/sys v0.49.0
+	golang.org/x/sys v0.50.0
 )
 
 require (
