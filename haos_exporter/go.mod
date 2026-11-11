@@ -9,7 +9,7 @@ require (
 	github.com/prometheus/common v0.73.1
 	github.com/prometheus/exporter-toolkit v0.20.0
 	github.com/prometheus/procfs v0.23.0
-	go.yaml.in/yaml/v2 v2.4.4
+	go.yaml.in/yaml/v2 v2.4.5
 	golang.org/x/crypto v0.58.0
 	golang.org/x/sys v0.49.0
 )
