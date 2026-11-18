@@ -9,7 +9,7 @@
 
 # The builder runs on the build host's platform and cross-compiles, so an
 # arm64 image never needs emulation.
-FROM --platform=$BUILDPLATFORM golang:1.27.3-alpine3.24@sha256:b8c9b82affbbb82a020bbcf998dad2ba9516944ac7e883524642a481a9505e9c AS builder
+FROM --platform=$BUILDPLATFORM golang:1.27.3-alpine3.24@sha256:fa3d596898d9f126af7c01d14ee7597bab3f39cccf392ef36b69fe77cd681f18 AS builder
 
 # Set by BuildKit (buildx) for the target platform.
 ARG TARGETOS
@@ -48,7 +48,7 @@ RUN GOOS="${TARGETOS:-linux}" GOARCH="${TARGETARCH}" \
  && go clean -cache -modcache
 
 # distroless static, nonroot variant: no shell, no package manager, uid 65532.
-FROM gcr.io/distroless/static-debian13:nonroot@sha256:25ac8f0c3b2334a9eb05452266bd4697864a8c8ef0ef71e5e6480d7f92868329
+FROM gcr.io/distroless/static-debian13:nonroot@sha256:aafe993665bf6200db38a02c11a9351e782a84b6a45e7f33b6695638c88e3931
 
 ARG BUILD_ARCH
 ARG BUILD_VERSION=dev
